@@ -1,0 +1,14 @@
+{
+  "name": "cbalerts",
+  "version": "1.0.0",
+  "description": "Send alerts to users when things happen with Bitcoin prices. Uses the Coinbase API.",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Stephen Roman",
+  "license": "ISC",
+  "dependencies": {
+    "mocha": "^4.0.1"
+  }
+}
