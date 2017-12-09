@@ -2,9 +2,11 @@ let https = require('https');
 let moment = require('moment');
 
 /**
- * Gets the current price for the given currency pair
- * @param currencyPair string of the currency to convert from and to of the format TCU-FCU
- * @param callback
+ * Gets the current price for the given currency pair.
+ *
+ * @param currencyPair: string: currency to convert from and to, of the format: TCU-FCU
+ * @param callback: function:
+ * @returns amt: number:        current price of given currencyPair
  */
 exports.getCurrentPrice = function (currencyPair, callback) {
     this.getSpotPrice(currencyPair, new Date().toISOString().slice(0, 10), (amt) => {
@@ -13,38 +15,43 @@ exports.getCurrentPrice = function (currencyPair, callback) {
 };
 
 /**
- * Fetches a price from the Coinbase spot price API endpoint
- * @param url       URL to make the request to
- * @param callback
+ * Fetches data from the given Coinbase API endpoint.
+ *
+ * @param url: string:          URL to make the GET request to
+ * @param callback: function:
+ * @returns object:             data returned by GET to url
  */
-exports.getPriceFromApi = function (url, callback) {
+exports.getJSONFromApi = function (url, callback) {
     https.get(url, (res) => {
         res.on('data', (bin) => {
-            let amt = JSON.parse(bin).data.amount;
-            callback(amt);
+            callback(JSON.parse(bin));
         })
     }).on('error', (err) => {console.log(err);});
 };
 
 /**
  * Builds and returns the URL string for a request to the Coinbase spot price endpoint.
- * @param currencyPair  string of the currency to convert from and to of the format TCU-FCU
- * @param date          string of the date of format YYYY-MM-DD (UTC)
+ *
+ * @param currencyPair: string: currency to convert from and to, of the format TCU-FCU
+ * @param date: string:         date of format YYYY-MM-DD
+ * @returns string:             URL to query to get the spot price of the given currencyPair for the given date
  */
 exports.makeSpotUrl = function (currencyPair, date) {
     return `https://api.coinbase.com/v2/prices/${currencyPair}/spot?date=${date}`;
 };
 
 /**
- * Make the GET request to the spot price API and return the resulting price data.
- * @param currencyPair string of the currency pair of the format BAS-CUR
- * @param date         string of the date of the format YYYY-MM-DD (months are NOT zero indexed as with Date)
- * @param callback     function to do something with the amount retrieved
+ * Makes the GET request to the spot price API and return the resulting price data.
+ *
+ * @param currencyPair: string:  currency pair of the format TCU-FCU
+ * @param date: string:          string of the date of the format YYYY-MM-DD
+ * @param callback: function:    
+ * @returns amt: number:         current price for the given currency pair
  */
 exports.getSpotPrice = function (currencyPair, date, callback) {
     console.log('Getting spot price for ' +currencyPair + ' for date: ' + date);
-    this.getPriceFromApi(this.makeSpotUrl(currencyPair, date), (amt) => {
-        callback(amt);
+    this.getJSONFromApi(this.makeSpotUrl(currencyPair, date), (json) => {
+        callback(json.data.amount);
     })
 };
 
@@ -52,9 +59,10 @@ exports.getSpotPrice = function (currencyPair, date, callback) {
  * Return a list of prices (one price per day) for the given year
  * Calls to getSpotPrice will occur in parallel, thus the order of prices is not
  * guaranteed to be correct
- * @param currencyPair  string
- * @param year          string of the current year
- * @param callback      function
+ * @param currencyPair: string:         currency pair of the format TCU-FCU
+ * @param year: string:                 year to get prices for
+ * @param callback: function:
+ * @returns prices: list of objects:    object for each day of the format {date, price}
  */
 exports.getDailyPricesForHistoricalYear = function (currencyPair, year, callback) {
 
@@ -81,11 +89,14 @@ exports.getDailyPricesForHistoricalYear = function (currencyPair, year, callback
 };
 
 /**
- * Return a list of prices in the given range of dates of the given frequency
- * @param currencyPair
- * @param startDate
- * @param endDate
- * @param callback
+ * Return a list of prices in the given range of dates (inclusive)
+ * startDate and endDate must be of the format YYYY-MM-DD
+ *
+ * @param currencyPair: string:         currencies to convert from and to of the format TCU-FCU
+ * @param startDate: string:            string of the date to start on
+ * @param endDate: string:              string of the date to end on
+ * @param callback: function:
+ * @returns prices: list of objects:    object for each day of the format {date, price}
  */
 exports.getDailyPricesInRange = function (currencyPair, startDate, endDate, callback) {
 
@@ -93,7 +104,7 @@ exports.getDailyPricesInRange = function (currencyPair, startDate, endDate, call
     let daysRemaining = this.findDaysBetweenDates(startDate, endDate) + 1;
 
     for (let day = 0; day < daysRemaining; day++) {
-        let parsedDate = moment(startDate).add(day, 'days').toISOString().slice(0, 10);
+        let parsedDate = startMoment.add(day, 'days').toISOString().slice(0, 10);
         this.getSpotPrice(currencyPair, parsedDate, (amt) => {
             prices.push({date: parsedDate, price: amt});
             if (--daysRemaining === 0)
@@ -103,9 +114,10 @@ exports.getDailyPricesInRange = function (currencyPair, startDate, endDate, call
 };
 
 /**
- * Returns the average of the prices in a given list
- * @param days the list of prices to average
+ * Returns the average of a number of prices
  *
+ * @param days: list of numbers:    prices to average
+ * @returns number:                 average of the given prices
  */
 exports.getAvgPrice = function (days) {
     let total = Object.keys(days).length;
@@ -119,24 +131,28 @@ exports.getAvgPrice = function (days) {
 };
 
 /**
- * Returns a string of the 200 day moving average price of the given currency pair
- * @param currencyPair
- * @param callback
+ * Returns a string of the 200 day moving average price for the given currency pair
+ *
+ * @param currencyPair: string: currencies to convert from and to of the format TCU-FCU
+ * @param callback: function:
+ * @returns number:             average of the prices of the given currency pair over the past 200 days including today
  */
 exports.get200DayMovingAverage = function (currencyPair, callback) {
     this.getDailyPricesInRange(
         currencyPair,
         moment(new Date()).add(-200, 'days').toISOString().slice(0, 10),
-        moment(new Date()).add(0, 'days').toISOString().slice(0, 10),
+        new Date().toISOString().slice(0, 10),
         (prices) => {
-            callback(this.getAvgPrice(prices));
+            callback(this.getAvgPrice(Object.values(prices)));
     })
 };
 
 /**
- * Returns the number of days between two dates of the format YYYY-MM-DD
- * @param startDate
- * @param endDate
+ * Returns the number of days between two dates
+ *
+ * @param startDate: string:    start of the date range
+ * @param endDate: string:      end of the date range
+ * @returns number:             number of days between startDate and endDate
  */
 exports.findDaysBetweenDates = function (startDate, endDate) {
     return Math.abs(moment(startDate).diff(endDate, 'days'));
