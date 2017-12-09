@@ -1,4 +1,5 @@
 let https = require('https');
+let moment = require('moment');
 
 /**
  * Gets the current price for the given currency pair
@@ -6,9 +7,9 @@ let https = require('https');
  * @param callback
  */
 exports.getCurrentPrice = function (currencyPair, callback) {
-    this.getPriceFromApi(this.getSpotPrice(currencyPair, this.getTodaysDate(), (amt) => {
+    this.getSpotPrice(currencyPair, new Date().toISOString().slice(0, 10), (amt) => {
         callback(amt);
-    }))
+    })
 };
 
 /**
@@ -41,6 +42,7 @@ exports.makeSpotUrl = function (currencyPair, date) {
  * @param callback     function to do something with the amount retrieved
  */
 exports.getSpotPrice = function (currencyPair, date, callback) {
+    console.log('Getting spot price for ' +currencyPair + ' for date: ' + date);
     this.getPriceFromApi(this.makeSpotUrl(currencyPair, date), (amt) => {
         callback(amt);
     })
@@ -54,21 +56,21 @@ exports.getSpotPrice = function (currencyPair, date, callback) {
  * @param year          string of the current year
  * @param callback      function
  */
-exports.getDailyPricesForYear = function (currencyPair, year, callback) {
-
-    const months = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+exports.getDailyPricesForHistoricalYear = function (currencyPair, year, callback) {
 
     let prices = [];
     let daysRemaining = 365;
+    const months = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
 
     months.forEach((daysInMonth, i) => {
         // ensure the month is 2 digits long and is not zero indexed
         let iAsMonth = (i < 9) ? '0' + (i + 1) : i + 1;
         for (let day = 1; day <= daysInMonth; day++) {
             // ensure the day is 2 digits long
-            let parsedDay = (day.toString().length === 2) ? day : '0' + day;
-            this.getSpotPrice(currencyPair, `${year}-${iAsMonth}-${parsedDay}`, (amt) => {
-                prices.push({date: `${year}-${iAsMonth}-${parsedDay}`, price: amt});
+            let normalizedDay = (day.toString().length === 2) ? day : '0' + day;
+            let parsedDate = `${year}-${iAsMonth}-${normalizedDay}`;
+            this.getSpotPrice(currencyPair,parsedDate, (amt) => {
+                prices.push({date: parsedDate, price: amt});
 
                 // only invoke callback if all the requests are complete
                 if (--daysRemaining === 0)
@@ -83,19 +85,29 @@ exports.getDailyPricesForYear = function (currencyPair, year, callback) {
  * @param currencyPair
  * @param startDate
  * @param endDate
- * @param frequency
  * @param callback
  */
-exports.getDailyPricesForRange = function (currencyPair, startDate, endDate, frequency, callback) {
+exports.getDailyPricesInRange = function (currencyPair, startDate, endDate, callback) {
 
+    let prices = [];
+    let daysRemaining = this.findDaysBetweenDates(startDate, endDate) + 1;
+
+    for (let day = 0; day < daysRemaining; day++) {
+        let parsedDate = moment(startDate).add(day, 'days').toISOString().slice(0, 10);
+        this.getSpotPrice(currencyPair, parsedDate, (amt) => {
+            prices.push({date: parsedDate, price: amt});
+            if (--daysRemaining === 0)
+                callback(prices);
+        });
+    }
 };
 
 /**
- * Return the average of the prices in a given list of prices
+ * Returns the average of the prices in a given list
  * @param days the list of prices to average
  *
  */
-exports.getAvgFromDayRange = function (days) {
+exports.getAvgPrice = function (days) {
     let total = Object.keys(days).length;
     let sum = 0;
 
@@ -107,11 +119,25 @@ exports.getAvgFromDayRange = function (days) {
 };
 
 /**
- * Returns a string of today's date of the format YYYY-MM-DD
- * Months are NOT zero indexed
- * @returns string of the current date of the format YYYY-MM-DD
+ * Returns a string of the 200 day moving average price of the given currency pair
+ * @param currencyPair
+ * @param callback
  */
-exports.getTodaysDate = function () {
-    return new Date().toISOString().slice(0, 10);
+exports.get200DayMovingAverage = function (currencyPair, callback) {
+    this.getDailyPricesInRange(
+        currencyPair,
+        moment(new Date()).add(-200, 'days').toISOString().slice(0, 10),
+        moment(new Date()).add(0, 'days').toISOString().slice(0, 10),
+        (prices) => {
+            callback(this.getAvgPrice(prices));
+    })
 };
 
+/**
+ * Returns the number of days between two dates of the format YYYY-MM-DD
+ * @param startDate
+ * @param endDate
+ */
+exports.findDaysBetweenDates = function (startDate, endDate) {
+    return Math.abs(moment(startDate).diff(endDate, 'days'));
+};
