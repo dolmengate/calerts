@@ -49,24 +49,23 @@ exports.makeSpotUrl = function (currencyPair, date) {
  * @returns amt: number:         current price for the given currency pair
  */
 exports.getSpotPrice = function (currencyPair, date, callback) {
-    console.log('Getting spot price for ' +currencyPair + ' for date: ' + date);
     this.getJSONFromApi(this.makeSpotUrl(currencyPair, date), (json) => {
         callback(json.data.amount);
     })
 };
 
 /**
- * Return a list of prices (one price per day) for the given year
- * Calls to getSpotPrice will occur in parallel, thus the order of prices is not
- * guaranteed to be correct
+ * Return a list of days for the given year with the associated price
+ * The order of the list is not guaranteed to be chronological
+ *
  * @param currencyPair: string:         currency pair of the format TCU-FCU
  * @param year: string:                 year to get prices for
  * @param callback: function:
- * @returns prices: list of objects:    object for each day of the format {date, price}
+ * @returns days: list of objects:      object for each day of the format {date, price}
  */
 exports.getDailyPricesForHistoricalYear = function (currencyPair, year, callback) {
 
-    let prices = [];
+    let days = [];
     let daysRemaining = 365;
     const months = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
 
@@ -78,37 +77,36 @@ exports.getDailyPricesForHistoricalYear = function (currencyPair, year, callback
             let normalizedDay = (day.toString().length === 2) ? day : '0' + day;
             let parsedDate = `${year}-${iAsMonth}-${normalizedDay}`;
             this.getSpotPrice(currencyPair,parsedDate, (amt) => {
-                prices.push({date: parsedDate, price: amt});
+                days.push({date: parsedDate, price: amt});
 
                 // only invoke callback if all the requests are complete
                 if (--daysRemaining === 0)
-                    callback(prices);
+                    callback(days);
             });
         }
     });
 };
 
 /**
- * Return a list of prices in the given range of dates (inclusive)
- * startDate and endDate must be of the format YYYY-MM-DD
+ * Return a list of days in the given range (inclusive) and their associated prices
  *
  * @param currencyPair: string:         currencies to convert from and to of the format TCU-FCU
- * @param startDate: string:            string of the date to start on
- * @param endDate: string:              string of the date to end on
+ * @param startDate: string:            string of the date to start on of the format YYYY-MM-DD
+ * @param endDate: string:              string of the date to end on of the format YYYY-MM-DD
  * @param callback: function:
- * @returns prices: list of objects:    object for each day of the format {date, price}
+ * @returns days: list of objects:    object for each day of the format {date, price}
  */
 exports.getDailyPricesInRange = function (currencyPair, startDate, endDate, callback) {
 
-    let prices = [];
+    let days = [];
     let daysRemaining = this.findDaysBetweenDates(startDate, endDate) + 1;
 
     for (let day = 0; day < daysRemaining; day++) {
-        let parsedDate = startMoment.add(day, 'days').toISOString().slice(0, 10);
+        let parsedDate = moment(startDate).add(day, 'days').toISOString().slice(0, 10);
         this.getSpotPrice(currencyPair, parsedDate, (amt) => {
-            prices.push({date: parsedDate, price: amt});
+            days.push({date: parsedDate, price: amt});
             if (--daysRemaining === 0)
-                callback(prices);
+                callback(days);
         });
     }
 };
@@ -116,15 +114,15 @@ exports.getDailyPricesInRange = function (currencyPair, startDate, endDate, call
 /**
  * Returns the average of a number of prices
  *
- * @param days: list of numbers:    prices to average
+ * @param prices: list of numbers:    prices to average
  * @returns number:                 average of the given prices
  */
-exports.getAvgPrice = function (days) {
-    let total = Object.keys(days).length;
+exports.getAvgPrice = function (prices) {
+    let total = Object.keys(prices).length;
     let sum = 0;
 
-    days.forEach((day) => {
-        sum += Number(day.price);
+    prices.forEach((price) => {
+        sum += Number(price);
     });
 
     return sum / total;
@@ -142,8 +140,12 @@ exports.get200DayMovingAverage = function (currencyPair, callback) {
         currencyPair,
         moment(new Date()).add(-200, 'days').toISOString().slice(0, 10),
         new Date().toISOString().slice(0, 10),
-        (prices) => {
-            callback(this.getAvgPrice(Object.values(prices)));
+        (days) => {
+            let prices = [];
+            days.forEach( (day) => {
+                prices.push(day.price);
+            });
+            callback(this.getAvgPrice(prices));
     })
 };
 

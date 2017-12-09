@@ -1,7 +1,6 @@
 let assert = require('assert');
 let moment = require('moment');
 let app = require('../src/app.js');
-let https = require('https');
 
 describe('synchronous', () => {
     describe('app.makeSpotUrl(currencyPair, date)', () => {
@@ -11,23 +10,15 @@ describe('synchronous', () => {
                 app.makeSpotUrl('BTC-USD', '2016-02-15'));
         });
     });
-
+//
     describe('app.getAvgPrice(days)', () => {
         it('should return a real of the average price', () => {
             assert.equal(683.1885714285714, app.getAvgPrice(
-                [
-                    {date: '2016-01-01', price: '514.35' },
-                    {date: '2016-01-01', price: '625.23' },
-                    {date: '2016-01-01', price: '326.93' },
-                    {date: '2016-01-01', price: '853.85' },
-                    {date: '2016-01-01', price: '1059.93' },
-                    {date: '2016-01-01', price: '957.20' },
-                    {date: '2016-01-01', price: '444.83' }
-                ]
+                ['514.35', '625.23', '326.93', '853.85', '1059.93', '957.20', '444.83']
             ));
         })
     });
-
+//
     describe('app.findDaysBetweenDates', () => {
         it('should return the number of days in the range (inclusive)', () => {
             assert.equal(4,
@@ -42,11 +33,11 @@ describe('synchronous', () => {
 
 // ASYNC //
 describe('asynchronous', () => {
-    describe('app.getPriceFromApi(url, callback)', () => {
+    describe('app.getJSONFromApi(url, callback)', () => {
         it('should retrieve the the price of any currency pair at any time', (done) => {
-            app.getPriceFromApi('https://api.coinbase.com/v2/prices/BTC-USD/spot', (amt) => {
-                assert.strictEqual(typeof amt, typeof '0.00');
-                console.log(amt);
+            app.getJSONFromApi('https://api.coinbase.com/v2/prices/BTC-USD/spot', (json) => {
+                assert.strictEqual(typeof json, typeof {});
+                console.log(json);
                 done();
             })
         })
