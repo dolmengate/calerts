@@ -150,6 +150,18 @@ exports.get200DayMovingAverage = function (currencyPair, callback) {
 };
 
 /**
+ *
+ * @param callback
+ */
+exports.getMayerIndex = function (callback) {
+    this.get200DayMovingAverage('BTC-USD', (avg) => {
+        this.getCurrentPrice('BTC-USD', (currentPrice) => {
+            callback(currentPrice / avg);
+        })
+    })
+};
+
+/**
  * Returns the number of days between two dates
  *
  * @param startDate: string:    start of the date range

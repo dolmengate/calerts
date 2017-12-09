@@ -109,5 +109,15 @@ describe('asynchronous', () => {
                 done();
             })
         })
+    });
+
+    describe('app.getMayerIndex(callback)', () => {
+        it('should get the Mayer index', (done) => {
+            app.getMayerIndex( (index) => {
+                assert.strictEqual(typeof index, typeof 0.00);
+                console.log(index);
+                done();
+            })
+        })
     })
 });
