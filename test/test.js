@@ -1,6 +1,6 @@
 let assert = require('assert');
 let moment = require('moment');
-let app = require('../src/app.js');
+let app = require('../src/libs/cb.js');
 
 describe('synchronous', () => {
     describe('app.makeSpotUrl(currencyPair, date)', () => {

@@ -10,7 +10,10 @@
   "author": "Stephen Roman",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
     "mocha": "^4.0.1",
-    "moment": "^2.19.3"
+    "moment": "^2.19.3",
+    "pug": "^2.0.0-rc.4"
   }
 }

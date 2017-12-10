@@ -1,0 +1,11 @@
+doctype html
+html
+   body
+       h1 this is a header
+       p and some test as well
+
+       form(action='/cb-alerts/dashboard' method='POST')
+           input(type='text' id='message' name='message')
+           input(type='submit')
+
+       p= message
