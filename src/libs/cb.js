@@ -2,6 +2,17 @@ let https = require('https');
 let moment = require('moment');
 
 /**
+ * Builds and returns the URL string for a request to the Coinbase spot price endpoint.
+ *
+ * @param currencyPair: string: currency to convert from and to, of the format TCU-FCU
+ * @param date: string:         date of format YYYY-MM-DD
+ * @returns string:             URL to query to get the spot price of the given currencyPair for the given date
+ */
+exports.makeSpotUrl = function (currencyPair, date) {
+    return `https://api.coinbase.com/v2/prices/${currencyPair}/spot?date=${date}`;
+};
+
+/**
  * Gets the current price for the given currency pair.
  *
  * @param currencyPair: string: currency to convert from and to, of the format: TCU-FCU
@@ -27,17 +38,6 @@ exports.getJSONFromApi = function (url, callback) {
             callback(JSON.parse(bin));
         })
     }).on('error', (err) => {console.log(err);});
-};
-
-/**
- * Builds and returns the URL string for a request to the Coinbase spot price endpoint.
- *
- * @param currencyPair: string: currency to convert from and to, of the format TCU-FCU
- * @param date: string:         date of format YYYY-MM-DD
- * @returns string:             URL to query to get the spot price of the given currencyPair for the given date
- */
-exports.makeSpotUrl = function (currencyPair, date) {
-    return `https://api.coinbase.com/v2/prices/${currencyPair}/spot?date=${date}`;
 };
 
 /**
@@ -150,8 +150,10 @@ exports.get200DayMovingAverage = function (currencyPair, callback) {
 };
 
 /**
+ * Get the current Mayer Index: the current price divided by the 200 day moving average.
  *
  * @param callback
+ * @returns number: current price divided by the 200DMA
  */
 exports.getMayerIndex = function (callback) {
     this.get200DayMovingAverage('BTC-USD', (avg) => {

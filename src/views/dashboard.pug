@@ -1,11 +1,13 @@
 doctype html
 html
    body
-       h1 this is a header
-       p and some test as well
+       h1 cb-alerts
 
        form(action='/cb-alerts/dashboard' method='POST')
            input(type='text' id='message' name='message')
-           input(type='submit')
+           input(type='submit' value='Submit')
 
        p= message
+       p(id='test')
+
+       script(src='/scripts/config.js')
