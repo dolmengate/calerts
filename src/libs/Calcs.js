@@ -13,7 +13,7 @@ function Calcs() {
      * @param date: string:         date of format YYYY-MM-DD
      * @returns string:             URL to query to get the spot price of the given currencyPair for the given date
      */
-    Calcs.prototype.makeSpotUrl = function (currencyPair, date) {
+    Calcs.makeSpotUrl = function (currencyPair, date) {
         return `https://api.coinbase.com/v2/prices/${currencyPair}/spot?date=${date}`;
     };
 
@@ -24,7 +24,7 @@ function Calcs() {
      * @param callback: function:
      * @returns amt: number:        current price of given currencyPair
      */
-    Calcs.prototype.getCurrentPrice = function (currencyPair, callback) {
+    Calcs.getCurrentPrice = function (currencyPair, callback) {
         this.getSpotPrice(currencyPair, new Date().toISOString().slice(0, 10), (amt) => {
             callback(amt);
         })
@@ -37,7 +37,7 @@ function Calcs() {
      * @param callback: function:
      * @returns object:             data returned by GET to url
      */
-    Calcs.prototype.getJSONFromApi = function (url, callback) {
+    Calcs.getJSONFromApi = function (url, callback) {
         https.get(url, (res) => {
             res.on('data', (bin) => {
                 callback(JSON.parse(bin));
@@ -55,7 +55,7 @@ function Calcs() {
      * @param callback: function:
      * @returns amt: number:         current price for the given currency pair
      */
-    Calcs.prototype.getSpotPrice = function (currencyPair, date, callback) {
+    Calcs.getSpotPrice = function (currencyPair, date, callback) {
         this.getJSONFromApi(this.makeSpotUrl(currencyPair, date), (json) => {
             this.currentPrice = json.data.amount;
             callback(this.currentPrice);
@@ -71,7 +71,7 @@ function Calcs() {
      * @param callback: function:
      * @returns days: list of objects:      object for each day of the format {date, price}
      */
-    Calcs.prototype.getDailyPricesForHistoricalYear = function (currencyPair, year, callback) {
+    Calcs.getDailyPricesForHistoricalYear = function (currencyPair, year, callback) {
 
         let days = [];
         let daysRemaining = 365;
@@ -104,7 +104,7 @@ function Calcs() {
      * @param callback: function:
      * @returns days: list of objects:    object for each day of the format {date, price}
      */
-    Calcs.prototype.getDailyPricesInRange = function (currencyPair, startDate, endDate, callback) {
+    Calcs.getDailyPricesInRange = function (currencyPair, startDate, endDate, callback) {
 
         let days = [];
         let daysRemaining = this.findDaysBetweenDates(startDate, endDate) + 1;
@@ -125,7 +125,7 @@ function Calcs() {
      * @param prices: list of numbers:    prices to average
      * @returns number:                 average of the given prices
      */
-    Calcs.prototype.getAvgPrice = function (prices) {
+    Calcs.getAvgPrice = function (prices) {
         let total = Object.keys(prices).length;
         let sum = 0;
 
@@ -143,7 +143,7 @@ function Calcs() {
      * @param callback: function:
      * @returns number:             average of the prices of the given currency pair over the past 200 days including today
      */
-    Calcs.prototype.get200DayMovingAverage = function (currencyPair, callback) {
+    Calcs.get200DayMovingAverage = function (currencyPair, callback) {
         this.getDailyPricesInRange(
             currencyPair,
             moment(new Date()).add(-200, 'days').toISOString().slice(0, 10),
@@ -164,7 +164,7 @@ function Calcs() {
      * @param endDate: string:      end of the date range
      * @returns number:             number of days between startDate and endDate
      */
-    Calcs.prototype.findDaysBetweenDates = function (startDate, endDate) {
+    Calcs.findDaysBetweenDates = function (startDate, endDate) {
         return Math.abs(moment(startDate).diff(endDate, 'days'));
     };
 
@@ -174,7 +174,7 @@ function Calcs() {
      * @param callback
      * @returns number: current price divided by the 200DMA
      */
-    Calcs.prototype.getMayerIndex = function (callback) {
+    Calcs.getMayerIndex = function (callback) {
         this.get200DayMovingAverage('BTC-USD', (avg) => {
             this.getCurrentPrice('BTC-USD', (currentPrice) => {
                 this.mayerIndex = currentPrice / avg;

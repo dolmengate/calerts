@@ -5,7 +5,7 @@
   "repository": "github.com/dolmengate/cb-alerts",
   "main": "app.js",
   "scripts": {
-    "test": "mocha --timeout 30000"
+    "test": "mocha --timeout 60000"
   },
   "author": "Stephen Roman",
   "license": "ISC",
