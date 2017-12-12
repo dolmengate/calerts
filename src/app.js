@@ -7,9 +7,10 @@ const app = express();
 const PORT = '8080';
 
 const dashboard = require('./routes/dashboard');
+const signup = require('./routes/signup');
 
 // set static files serving
-// const options = { extensions: ['js'] };
+const options = { extensions: ['js'] };
 app.use(express.static(path.join(__dirname, 'public')));
 
 // setup view locations and interpretation
@@ -20,8 +21,9 @@ app.set('view engine', 'pug');
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
-// Dashboard mapping //
+/* Dashboard mapping */
 app.use('/cb-alerts/dashboard/', dashboard);
+app.use('/cb-alerts/signup', signup);
 
 // catch and forward 404
 app.use((req, res, next) => {

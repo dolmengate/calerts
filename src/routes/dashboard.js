@@ -1,16 +1,17 @@
 
 const express = require('express');
 const router = express.Router();
+const Calcs = require('../libs/Calcs');
 
 // main route
-router.route('/')
-    .get((req, res) => {
+router.get('/', (req, res) => {
         res.render('dashboard');
-    })
-    .post((req, res) => {
+    });
+
+    router.post(('/'), (req, res) => {
         console.log(req.headers);
-        res.render('dashboard', {
-           message: req.body.message
+        Calcs.getMayerIndex((mayerIndex) => {
+            res.send( { mayerIndex } );
         });
     });
 
