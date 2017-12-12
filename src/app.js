@@ -21,7 +21,7 @@ run = function () {
             mayerIndex = mi;
         })
 
-    }, 60000 * 1); // ten minutes
+    }, 60000 * 10); // ten minutes
 };
 
 exports.getMayerIndex = function() {
