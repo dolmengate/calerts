@@ -3,6 +3,7 @@ const Calcs = require('./libs/Calcs');
 
 let mayerIndex = 0;
 let twoHundredDayMovingAverage = 0;
+let lastUpdated = 0;
 
 run = function () {
 
@@ -11,17 +12,16 @@ run = function () {
 
     setInterval(() => {
 
-        console.log('Getting 200dma... ' + new Date());
+        lastUpdated = new Date();
         Calcs.get200DayMovingAverage('BTC-USD', (tdma) => {
             twoHundredDayMovingAverage = tdma;     // not updating
         });
 
-        console.log('Getting Mayer Index... ' + new Date());
         Calcs.getMayerIndex((mi) => {
             mayerIndex = mi;
         })
 
-    }, 60000 * 10); // ten minutes
+    }, 60000 * 1); // ten minutes
 };
 
 exports.getMayerIndex = function() {
@@ -30,6 +30,10 @@ exports.getMayerIndex = function() {
 
 exports.getTwoHundredDMA = function() {
     return twoHundredDayMovingAverage;
+};
+
+exports.getLastUpdated = function() {
+    return lastUpdated;
 };
 
 run();

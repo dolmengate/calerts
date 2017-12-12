@@ -8,7 +8,8 @@ router.get('/', (req, res) => {
     res.render('dashboard',
         {
             mayerIndex : App.getMayerIndex(),
-            twoHundredDayMovingAverage : App.getTwoHundredDMA()
+            twoHundredDayMovingAverage : App.getTwoHundredDMA(),
+            lastUpdated: App.getLastUpdated()
         }
     );
 });
