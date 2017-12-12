@@ -1,1 +1,0 @@
-document.getElementById('test').innerHTML = 'static hosting is working!';

@@ -1,36 +1,35 @@
+const WebServer = require('./WebServer.js');
+const Calcs = require('./libs/Calcs');
 
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
+let mayerIndex = 0;
+let twoHundredDayMovingAverage = 0;
 
-const app = express();
-const PORT = '8080';
+run = function () {
 
-const dashboard = require('./routes/dashboard');
-const signup = require('./routes/signup');
+    WebServer.start();
+    console.log('Server started');
 
-// set static files serving
-const options = { extensions: ['js'] };
-app.use(express.static(path.join(__dirname, 'public')));
+    setInterval(() => {
 
-// setup view locations and interpretation
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+        console.log('Getting 200dma... ' + new Date());
+        Calcs.get200DayMovingAverage('BTC-USD', (tdma) => {
+            twoHundredDayMovingAverage = tdma;     // not updating
+        });
 
-// allow reading request body
-app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
+        console.log('Getting Mayer Index... ' + new Date());
+        Calcs.getMayerIndex((mi) => {
+            mayerIndex = mi;
+        })
 
-/* Dashboard mapping */
-app.use('/cb-alerts/dashboard/', dashboard);
-app.use('/cb-alerts/signup', signup);
+    }, 60000 * 10); // ten minutes
+};
 
-// catch and forward 404
-app.use((req, res, next) => {
-    let err = new Error('404 - Not Found');
-    err.status = 404;
-    next(err);
-});
+exports.getMayerIndex = function() {
+   return mayerIndex;
+};
 
-app.listen(PORT);
-console.log('app listening on port: ' + PORT);
+exports.getTwoHundredDMA = function() {
+    return twoHundredDayMovingAverage;
+};
+
+run();
