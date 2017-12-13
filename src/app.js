@@ -1,4 +1,4 @@
-const WebServer = require('./WebServer.js');
+const www = require('./www.js');
 const Calcs = require('./libs/Calcs');
 const SendMail = require('./libs/SendMail');
 const fs = require('fs');
@@ -12,7 +12,7 @@ let lastUpdated = 0;
 
 run = function () {
 
-    WebServer.start();
+    www.start();
     console.log('Server started');
 
     lastUpdated = new Date();

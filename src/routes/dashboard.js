@@ -9,7 +9,6 @@ router.get('/', (req, res) => {
         {
             mayerIndex : App.getMayerIndex(),
             twoHundredDayMovingAverage : App.getTwoHundredDMA(),
-            lastUpdated: App.getLastUpdated(),
             currentPrice: App.getCurrentPrice()
         }
     );
