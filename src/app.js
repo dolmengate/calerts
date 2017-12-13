@@ -81,4 +81,8 @@ exports.getLastUpdated = function() {
     return lastUpdated;
 };
 
+exports.getCurrentPrice = function() {
+    return currentPrice;
+};
+
 run();
