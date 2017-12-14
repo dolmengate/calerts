@@ -1,3 +1,7 @@
+// USER DASHBOARD //
+
+    // TODO add user account creation and login forms
+    // TODO add user options settings forms
 doctype html
 html
     head
@@ -30,6 +34,11 @@ html
                 a(href='/cb-alerts/signup') Sign up for updates
 
             p#socket-status(class='badge badge-danger') Socket status
+
+            form(class="form-inline" action='/cb-alerts/signup')
+                input(type="email" name='email' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='email address')
+                input(type='password' name='password' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='password')
+                button(type="submit" class="btn btn-primary") Sign Up
 
         script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js'
                 integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN'

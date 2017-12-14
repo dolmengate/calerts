@@ -10,6 +10,8 @@ let mayerIndex = 0;
 let twoHundredDayMovingAverage = 0;
 let lastUpdated = 0;
 
+
+// TODO cache recent currency pair data
 run = function () {
 
     www.start();
