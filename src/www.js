@@ -1,6 +1,7 @@
 
 const path = require('path');
 const bodyParser = require('body-parser');
+const Calcs = require('./libs/Calcs');
 
 const PORT = '8080';
 
@@ -20,15 +21,31 @@ const signup = require('./routes/signup');
 
 exports.start = function () {
 
+    // while a user is connected update the page results
     wsserver.on('connection', (socket, req) => {
-        req.connection.remoteAddress;
-        socket.send('henlo');
-
         socket.on('message', (msg) => {
             console.log(msg);
         });
 
-        socket.close();
+        setInterval(() => {
+            // prevent WebSocket from throwing 'not opened' error
+            if (socket.readyState === WebSocket.OPEN) {
+                Calcs.get200DayMovingAverage('BTC-USD', (tdma) => {
+                    Calcs.getMayerIndex((mi) => {
+                        Calcs.getCurrentPrice('BTC-USD', (cp) => {
+                            socket.send(
+                                JSON.stringify(
+                                    {
+                                        twoHundredDayMovingAverage: tdma.toFixed(2),
+                                        mayerIndex: mi.toFixed(1),
+                                        currentPrice: cp.toFixed(2)
+                                    }
+                                ), null, (err) => { if (err) throw err; })
+                        })
+                    })
+                })
+            }
+        }, 10000);  // ten seconds
     });
 
     // set static files serving

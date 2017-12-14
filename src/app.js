@@ -18,15 +18,15 @@ run = function () {
     lastUpdated = new Date();
 
     Calcs.getCurrentPrice('BTC-USD', (price) => {
-        currentPrice = price;
+        currentPrice = price.toFixed(2);
     });
 
     Calcs.get200DayMovingAverage('BTC-USD', (tdma) => {
-        twoHundredDayMovingAverage = tdma;
+        twoHundredDayMovingAverage = tdma.toFixed(2);
     });
 
     Calcs.getMayerIndex((mi) => {
-        mayerIndex = mi;
+        mayerIndex = mi.toFixed(1);
     });
 
     // dashboard page update
@@ -35,15 +35,15 @@ run = function () {
         lastUpdated = new Date();
 
         Calcs.getCurrentPrice('BTC-USD', (price) => {
-            currentPrice = price;
+            currentPrice = price.toFixed(2);
         });
 
         Calcs.get200DayMovingAverage('BTC-USD', (tdma) => {
-            twoHundredDayMovingAverage = tdma;
+            twoHundredDayMovingAverage = tdma.toFixed(2);
         });
 
         Calcs.getMayerIndex((mi) => {
-            mayerIndex = mi;
+            mayerIndex = mi.toFixed(1);
         })
 
     }, 60000 * 10); // ten minutes

@@ -2,25 +2,34 @@ doctype html
 html
     head
         link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css'
-        integrity='sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb'
-        crossorigin='anonymous')
-
+            integrity='sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb'
+            crossorigin='anonymous')
     body
         div(class='container')
             h1 cb-alerts
-            p
-                span Current Price :
-                span#current-price= currentPrice
+            div(class='d-inline-block')
+                p(class='d-sm-inline-block m-2')
+                    span Current:
+                    |
+                    |
+                    span $
+                    span#current-price= currentPrice
+                p(class='d-sm-inline-block m-2')
+                    span 200DMA:
+                    |
+                    |
+                    span $
+                    span#200dma= twoHundredDayMovingAverage
+                p(class='d-sm-inline-block m-2')
+                    span Mayer Index:
+                    |
+                    |
+                    span#mayer-index= mayerIndex
 
             p
-                span 200 Day Moving Average :
-                span#200dma= twoHundredDayMovingAverage
-            p
-                span Mayer Index :
-                span#mayer-index= mayerIndex
+                a(href='/cb-alerts/signup') Sign up for updates
 
-            |
-            a(href='/cb-alerts/signup') Sign up for updates
+            p#socket-status(class='badge badge-danger') Socket status
 
         script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js'
                 integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN'

@@ -21,7 +21,7 @@ let moment = require('moment');
      */
     exports.getCurrentPrice = function (currencyPair, callback) {
         this.getSpotPrice(currencyPair, new Date().toISOString().slice(0, 10), (amt) => {
-            callback(amt);
+            callback(Number(amt));
         })
     };
 
@@ -52,8 +52,7 @@ let moment = require('moment');
      */
     exports.getSpotPrice = function (currencyPair, date, callback) {
         this.getJSONFromApi(this.makeSpotUrl(currencyPair, date), (json) => {
-            this.currentPrice = json.data.amount;
-            callback(this.currentPrice);
+            callback(json.data.amount);
         })
     };
 
@@ -172,8 +171,7 @@ let moment = require('moment');
     exports.getMayerIndex = function (callback) {
         this.get200DayMovingAverage('BTC-USD', (avg) => {
             this.getCurrentPrice('BTC-USD', (currentPrice) => {
-                this.mayerIndex = currentPrice / avg;
-                callback(this.mayerIndex);
+                callback(currentPrice / avg);
             })
         })
     };
