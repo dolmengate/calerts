@@ -1,7 +1,7 @@
 
 const path = require('path');
 const bodyParser = require('body-parser');
-const Calcs = require('./libs/Calcs');
+const Calcs = require('./libs/apis');
 
 const PORT = '8080';
 

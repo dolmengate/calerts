@@ -1,6 +1,6 @@
 let assert = require('assert');
 let moment = require('moment');
-let Calcs = require('../src/libs/Calcs');
+let Calcs = require('../src/libs/apis');
 
 describe('synchronous functions', () => {
     describe('Calcs.makeSpotUrl(currencyPair, date)', () => {
