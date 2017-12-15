@@ -25,8 +25,8 @@ exports.send = function (senderAddress, subject, recipientAddress, message, call
     // set log level: -OLogLevel=9                  NO WORKY
     // specify log file: -D ./your/logfile.txt      NO WORKY
 
-    let command = 'echo "' + message + '" | sendmail -f calerts@sroman.info ' + recipientAddress;
-    console.log('Sending email to recipientAddress: ' + recipientAddress);
+    let command = 'echo "' + email + '" | sendmail -t -f ' + senderAddress;
+    console.log('Sending email to recipient: ' + recipientAddress);
     console.log(command);
     child_process.exec(command, (err) => {
         if (err) throw err;
@@ -34,6 +34,5 @@ exports.send = function (senderAddress, subject, recipientAddress, message, call
     });
 
     // don't wait for async write to DB to complete
-    db.saveEmail(recipientAddress, new Date().toISOString(), email);
-
+    db.saveEmail(recipientAddress, new Date().toISOString(), email, () => {});
 };

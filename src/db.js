@@ -2,7 +2,7 @@ let MongoClient = require('mongodb').MongoClient;
 let assert = require('assert');
 
 // Connection url
-const url = 'mongodb://localhost:27017/calerts';
+const DB_URL = 'mongodb://localhost:27017/calerts';
 
 
 /* U S E R S   -   C R U D   O P E R A T I O N S */
@@ -11,7 +11,7 @@ const url = 'mongodb://localhost:27017/calerts';
  */
 
 exports.createUser = function(emailAddress, password, callback) {
-    connectToCollection(url, 'users',(db, collection) => {
+    connectToCollection(DB_URL, 'users',(db, collection) => {
         collection.insertOne(
             {
                 emailAddress,
@@ -31,7 +31,7 @@ exports.createUser = function(emailAddress, password, callback) {
 };
 
 exports.findUser = function(queryObject, callback) {
-    connectToCollection(url, 'users', (db, collection) => {
+    connectToCollection(DB_URL, 'users', (db, collection) => {
         collection.findOne( queryObject, (err, doc) => {
             assert.equal(null, err);
             db.close();
@@ -41,7 +41,7 @@ exports.findUser = function(queryObject, callback) {
 };
 
 exports.updateUser = function(filterObject, queryObject, callback) {
-    connectToCollection(url, 'users', (db, collection) => {
+    connectToCollection(DB_URL, 'users', (db, collection) => {
         collection.updateOne(filterObject, queryObject, (err, doc) => {
             assert.equal(null, err);
             assert.equal(1, doc.result.ok);
@@ -54,7 +54,7 @@ exports.updateUser = function(filterObject, queryObject, callback) {
 };
 
 exports.deleteUser = function (filterObject, callback) {
-    connectToCollection(url, 'users', (db, collection) => {
+    connectToCollection(DB_URL, 'users', (db, collection) => {
         collection.deleteOne( filterObject, null, (err, res) => {
             assert.equal(null, err);
             db.close();
@@ -71,8 +71,8 @@ exports.deleteUser = function (filterObject, callback) {
  *
  */
 
-saveEmail = function(recipientAddress, date, email, callback) {
-    connectToCollection(url, 'emails',(db, collection) => {
+exports.saveEmail = function(recipientAddress, date, email, callback) {
+    connectToCollection(DB_URL, 'emails',(db, collection) => {
         collection.insertOne(
             {
                 recipientAddress,
@@ -89,8 +89,8 @@ saveEmail = function(recipientAddress, date, email, callback) {
     })
 };
 
-findEmail = function(queryObject, callback) {
-    connectToCollection(url, 'emails', (db, collection) => {
+exports.findEmail = function(queryObject, callback) {
+    connectToCollection(DB_URL, 'emails', (db, collection) => {
         collection.findOne( queryObject, (err, doc) => {
             assert.equal(null, err);
             db.close();
@@ -102,10 +102,10 @@ findEmail = function(queryObject, callback) {
 
 /* D A T A B A S E   U T I L I T Y   F U N C T I O N S */
 
-connectToCollection = function(url, coll, callback) {
-    MongoClient.connect(url, (err, db) => {
+connectToCollection = function(DB_URL, coll, callback) {
+    MongoClient.connect(DB_URL, (err, db) => {
         assert.equal(null, err);
-        console.log('Connected to mongodb server on ' + url);
+        console.log('Connected to mongodb server on ' + DB_URL);
 
         callback(db, db.collection(coll));
     });
