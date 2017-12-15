@@ -42,7 +42,7 @@ socket.onclose = (e) => {
 document.getElementById('signup-btn').onclick = (e) => {
     e.preventDefault();
     $.post(
-            '/cb-alerts/signup',
+            '/calerts/signup',
             {
                 emailAddress: document.getElementById('email').value,
                 password: document.getElementById('password').value

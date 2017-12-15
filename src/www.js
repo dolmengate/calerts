@@ -60,8 +60,8 @@ exports.start = function () {
     app.use(bodyParser.json());
 
     /* Dashboard mapping */
-    app.use('/cb-alerts/dashboard', dashboard);
-    app.use('/cb-alerts/signup', signup);
+    app.use('/calerts/dashboard', dashboard);
+    app.use('/calerts/signup', signup);
 
     // catch and forward 404
     app.use((req, res, next) => {

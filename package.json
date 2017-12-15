@@ -1,8 +1,8 @@
 {
-  "name": "cbalerts",
+  "name": "calerts",
   "version": "1.0.0",
-  "description": "Send alerts to users when things happen with Bitcoin prices. Uses the Coinbase API.",
-  "repository": "github.com/dolmengate/cb-alerts",
+  "description": "Send alerts to users when things happen with cypto-currency prices.",
+  "repository": "github.com/dolmengate/calerts",
   "main": "app.js",
   "scripts": {
     "test": "mocha --timeout 60000"

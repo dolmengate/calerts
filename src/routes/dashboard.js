@@ -5,13 +5,7 @@ const App = require('../app');
 
 // main route
 router.get('/', (req, res) => {
-    res.render('dashboard',
-        {
-            mayerIndex : App.getMayerIndex(),
-            twoHundredDayMovingAverage : App.getTwoHundredDMA(),
-            currentPrice: App.getCurrentPrice()
-        }
-    );
+    res.render('dashboard');
 });
 
 module.exports = router;

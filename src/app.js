@@ -17,52 +17,19 @@ run = function () {
     www.start();
     console.log('Server started');
 
-    lastUpdated = new Date();
-
-    Calcs.getCurrentPrice('BTC-USD', (price) => {
-        currentPrice = price.toFixed(2);
-    });
-
-    Calcs.get200DayMovingAverage('BTC-USD', (tdma) => {
-        twoHundredDayMovingAverage = tdma.toFixed(2);
-    });
-
-    Calcs.getMayerIndex((mi) => {
-        mayerIndex = mi.toFixed(1);
-    });
-
-    // dashboard page update
-    setInterval(() => {
-
-        lastUpdated = new Date();
-
-        Calcs.getCurrentPrice('BTC-USD', (price) => {
-            currentPrice = price.toFixed(2);
-        });
-
-        Calcs.get200DayMovingAverage('BTC-USD', (tdma) => {
-            twoHundredDayMovingAverage = tdma.toFixed(2);
-        });
-
-        Calcs.getMayerIndex((mi) => {
-            mayerIndex = mi.toFixed(1);
-        })
-
-    }, 60000 * 10); // ten minutes
-
     // email updates
     setInterval(() => {
         fs.readFile(path.join(__dirname, 'emails', 'users.txt'), (err, usersData) => {
             if (err) throw err;
                 async.each(usersData.toString().split('\n'), (user, next) => {
                     if (user)   // don't do blank lines
-                        SendMail.send('cbalerts@sroman.info', 'cbalerts Price Update', user,
+                        SendMail.send('calerts@sroman.info', 'calerts Price Update', user,
                             'This is an automated message, please do not respond.' + '\n' + '\n' +
                             'Bitcoin\n' + '\n' + '\n' +
                             'Current Price: ' + currentPrice + '\n' +
                             '200 Daily Moving Average: ' + twoHundredDayMovingAverage + '\n' +
                             'Mayer Index: ' + mayerIndex + '\n' + '\n' +
-                            'cbalerts', () => {
+                            'calerts', () => {
                                 console.log('Mail to ' + user + ' sent.');
                             });
                     next();
