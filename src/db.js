@@ -4,14 +4,15 @@ let assert = require('assert');
 // Connection url
 const url = 'mongodb://localhost:27017/calerts';
 
-createUser = function(emailAddress, password, callback) {
+exports.createUser = function(emailAddress, password, callback) {
     connectToCollection(url, 'users',(db, collection) => {
         collection.insertOne(
             {
                 emailAddress,
                 password,
                 updateFrequency: 0,
-                currencyPairs: ['BTC-USD']
+                currencyPairs: ['BTC-USD'],
+                isVerified: false
             },
             (err, res) => {
                 assert.equal(null, err);
@@ -23,7 +24,7 @@ createUser = function(emailAddress, password, callback) {
     })
 };
 
-findUser = function(queryObject, callback) {
+exports.findUser = function(queryObject, callback) {
     connectToCollection(url, 'users', (db, collection) => {
         collection.findOne( queryObject, (err, doc) => {
             assert.equal(null, err);
@@ -34,7 +35,7 @@ findUser = function(queryObject, callback) {
     })
 };
 
-updateUser = function(filterObject, queryObject, callback) {
+exports.updateUser = function(filterObject, queryObject, callback) {
     connectToCollection(url, 'users', (db, collection) => {
         collection.updateOne(filterObject, queryObject, (err, doc) => {
             assert.equal(null, err);
@@ -47,7 +48,7 @@ updateUser = function(filterObject, queryObject, callback) {
     })
 };
 
-deleteUser = function (filterObject, callback) {
+exports.deleteUser = function (filterObject, callback) {
     connectToCollection(url, 'users', (db, collection) => {
         collection.deleteOne( filterObject, null, (err, res) => {
             assert.equal(null, err);

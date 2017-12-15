@@ -38,3 +38,14 @@ socket.onclose = (e) => {
     console.log('Socket closed');
     document.getElementById('socket-status').setAttribute('class', 'badge badge-warning');
 };
+
+document.getElementById('signup-btn').onclick = (e) => {
+    e.preventDefault();
+    $.post(
+            '/cb-alerts/signup',
+            {
+                emailAddress: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            }
+        );
+};

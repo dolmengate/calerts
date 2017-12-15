@@ -30,18 +30,14 @@ html
                     |
                     span#mayer-index= mayerIndex
 
-            p
-                a(href='/cb-alerts/signup') Sign up for updates
-
             p#socket-status(class='badge badge-danger') Socket status
 
-            form(class="form-inline" action='/cb-alerts/signup')
-                input(type="email" name='email' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='email address')
-                input(type='password' name='password' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='password')
-                button(type="submit" class="btn btn-primary") Sign Up
+            form(class="form-inline")
+                input(type="email" id='email' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='email address')
+                input(type='password' id='password' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='password')
+                button(id='signup-btn' class="btn btn-primary") Sign Up
 
-        script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js'
-                integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN'
+        script(src='https://code.jquery.com/jquery-3.2.1.min.js'
                 crossorigin='anonymous')
         script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js'
                 integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
