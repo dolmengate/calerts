@@ -4,6 +4,12 @@ let assert = require('assert');
 // Connection url
 const url = 'mongodb://localhost:27017/calerts';
 
+
+/* U S E R S   -   C R U D   O P E R A T I O N S */
+/**
+ * Index: emailAddress (unique)
+ */
+
 exports.createUser = function(emailAddress, password, callback) {
     connectToCollection(url, 'users',(db, collection) => {
         collection.insertOne(
@@ -28,7 +34,6 @@ exports.findUser = function(queryObject, callback) {
     connectToCollection(url, 'users', (db, collection) => {
         collection.findOne( queryObject, (err, doc) => {
             assert.equal(null, err);
-            assert.equal(1, doc.length);
             db.close();
             callback(doc);
         });
@@ -57,6 +62,45 @@ exports.deleteUser = function (filterObject, callback) {
         });
     })
 };
+
+
+
+/* E M A I L S   -   C R U D   O P E R A T I O N S */
+/**
+ * Indexes: recipientAddress, date (compound, unique)
+ *
+ */
+
+saveEmail = function(recipientAddress, date, email, callback) {
+    connectToCollection(url, 'emails',(db, collection) => {
+        collection.insertOne(
+            {
+                recipientAddress,
+                date,
+                email
+            },
+            (err, res) => {
+                assert.equal(null, err);
+                assert.equal(1, res.result.n);
+                assert.equal(1, res.ops.length);
+                db.close();
+                callback(res);
+            });
+    })
+};
+
+findEmail = function(queryObject, callback) {
+    connectToCollection(url, 'emails', (db, collection) => {
+        collection.findOne( queryObject, (err, doc) => {
+            assert.equal(null, err);
+            db.close();
+            callback(doc);
+        });
+    })
+};
+
+
+/* D A T A B A S E   U T I L I T Y   F U N C T I O N S */
 
 connectToCollection = function(url, coll, callback) {
     MongoClient.connect(url, (err, db) => {

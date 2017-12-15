@@ -1,87 +1,39 @@
 const child_process = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const async = require('async');
+const db = require('../db');
 
 /**
  * Use the Ubuntu Sendmail utility to send an email to someone
- * This also saves a copy of the sent email to /src/emails/sent
+ * This also saves a copy of the sent email to the database collection Emails
  * TODO add logging to sendmail to be sure mail is actually being sent
  *
- * @param sender: string:       email address (or name) of sender
- * @param subject: string:      subject line
- * @param recipients: string:   email addresses of recipients separated by a single space
- * @param message: string:      body of the message to send
+ * @param senderAddress: string:        email address (or name) of sender
+ * @param subject: string:              subject line
+ * @param recipientAddress: string:     email addresses of recipient
+ * @param message: string:              the content of the email (the message itself)
  * @param callback
  */
-exports.send = function (sender, subject, recipients, message, callback) {
+exports.send = function (senderAddress, subject, recipientAddress, message, callback) {
 
     // construct email content
-    let content =
-        'To: ' + recipients + '\n' +
+    let email =
+        'To: ' + recipientAddress + '\n' +
         'Subject: ' + subject + '\n' +
-        'From: ' + sender + '\n' +
+        'From: ' + senderAddress + '\n' +
         '\n' +
         message;
 
-    let filePath = path.join(__dirname, '..', 'emails', 'sent' , '/');
-    let fileName = 'message_' + new Date().toISOString() + '.txt';
+    // set log level: -OLogLevel=9                  NO WORKY
+    // specify log file: -D ./your/logfile.txt      NO WORKY
 
-    // save a copy
-    fs.writeFile(path.join(filePath, fileName), content, (err) => {
+    let command = 'echo "' + message + '" | sendmail -f calerts@sroman.info ' + recipientAddress;
+    console.log('Sending email to recipientAddress: ' + recipientAddress);
+    console.log(command);
+    child_process.exec(command, (err) => {
         if (err) throw err;
+        callback();
     });
 
-    // set log level: -OLogLevel=9 NO WORKY
-    // specify log file: -D ./your/logfile.txt NO WORKY
+    // don't wait for async write to DB to complete
+    db.saveEmail(recipientAddress, new Date().toISOString(), email);
 
-    // use the recently saved copy of the message as the input for the cli command
-    let command = 'sendmail -t < ' + filePath;
-    findNewestFilename(filePath, (lastCreatedFile) => {
-        command = command + lastCreatedFile;
-        console.log('Sending email to recipients: ' + recipients);
-        console.log(command);
-        child_process.exec(command, (err) => {
-            if (err) throw err;
-            callback();
-        });
-    });
 };
-
-/**
- * Gets the filename of the most recently created file in a directory.
- *
- * @param dir: string:  directory to find the newest file in
- * @param callback
- * @returns string:     basename and extension of the newest file in dir
- */
-function findNewestFilename(dir, callback) {
-
-        let newest = '';    // filename to return
-
-        let prevBD = 0;       // birthdate of previous file in loop
-
-        let remain = 0;     // number of files left to check
-
-        // return basename + extension of newest file
-        fs.readdir(dir, (err, files) => {
-            remain = files.length;
-            async.each(files, (file, next) => {
-                fs.stat(dir + file, (err, fileStats) => {
-                    if (err) throw err;
-                    if (fileStats.birthtime > prevBD)
-                        newest = file;
-                    prevBD = fileStats.birthtime;
-                    if (--remain === 0)
-                        callback(newest);
-                });
-                next();
-            }, (err) => {
-                if (err) throw err;
-            });
-        });
-}
-
-// findNewestFilename(path.join(__dirname, '..', 'emails', 'sent', '/'), (file) => {
-//     console.log(file);
-// });
