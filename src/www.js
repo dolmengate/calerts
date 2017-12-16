@@ -1,7 +1,7 @@
 
 const path = require('path');
 const bodyParser = require('body-parser');
-const Calcs = require('./libs/apis');
+const apis = require('./libs/apis');
 
 const PORT = '8080';
 
@@ -30,14 +30,14 @@ exports.start = function () {
         setInterval(() => {
             // prevent WebSocket from throwing 'not opened' error
             if (socket.readyState === WebSocket.OPEN) {
-                Calcs.get200DayMovingAverage('BTC-USD', (tdma) => {
-                    Calcs.getMayerIndex((mi) => {
-                        Calcs.getCurrentPrice('BTC-USD', (cp) => {
+                apis.get200DayMovingAverage('BTC-USD', (tdma) => {
+                    apis.getmayerMultiple((mi) => {
+                        apis.getCurrentPrice('BTC-USD', (cp) => {
                             socket.send(
                                 JSON.stringify(
                                     {
                                         twoHundredDayMovingAverage: tdma.toFixed(2),
-                                        mayerIndex: mi.toFixed(1),
+                                        mayerMultiple: mi.toFixed(1),
                                         currentPrice: cp.toFixed(2)
                                     }
                                 ), null, (err) => { if (err) throw err; })

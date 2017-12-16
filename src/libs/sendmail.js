@@ -34,5 +34,5 @@ exports.send = function (senderAddress, subject, recipientAddress, message, call
     });
 
     // don't wait for async write to DB to complete
-    db.saveEmail(recipientAddress, new Date().toISOString(), email, () => {});
+    db.saveEmail(recipientAddress, new Date().getTime(), email, () => { console.log('Email saved')});
 };

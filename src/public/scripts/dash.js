@@ -29,7 +29,7 @@ socket.onerror = (err) => {
 socket.onmessage = (e) => {
     console.log('Socket message received ' + e.data);
     let data = JSON.parse(e.data);
-    document.getElementById('mayer-index').innerText = data.mayerIndex;
+    document.getElementById('mayer-multiple').innerText = data.mayerMultiple;
     document.getElementById('200dma').innerText = data.twoHundredDayMovingAverage;
     document.getElementById('current-price').innerText = data.currentPrice;
 };

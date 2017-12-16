@@ -111,9 +111,9 @@ describe('asynchronous functions', () => {
         })
     });
 
-    describe('Calcs.getMayerIndex(callback)', () => {
-        it('should get the Mayer index', (done) => {
-            Calcs.getMayerIndex( (index) => {
+    describe('Calcs.getmayerMultiple(callback)', () => {
+        it('should get the Mayer Multiple', (done) => {
+            Calcs.getmayerMultiple( (index) => {
                 assert.strictEqual(typeof index, typeof 0.00);
                 console.log(index);
                 done();

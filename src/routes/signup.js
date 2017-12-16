@@ -10,10 +10,11 @@ router.get('/', (req, res) => {
     res.render('signup');
 });
 
+//     TODO create hash to use as confirmation email param
+//     TODO generate confirmation URL with user hash
 router.post('/', (req, res) => {
 
-    // TODO create hash to use as confirmation email param
-    // TODO generate confirmation URL with user hash
+    res.sendStatus(200);
     sendmail.send(
         'calertsverify@sroman.info',
         'Please verify your email',
@@ -21,7 +22,6 @@ router.post('/', (req, res) => {
         'message here',
         () => {
             db.createUser(req.body.emailAddress, req.body.password, (res) => {
-                console.log(res);
                 console.log('User created');
             });
         });

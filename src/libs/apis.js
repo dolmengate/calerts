@@ -1,19 +1,36 @@
 let https = require('https');
 let moment = require('moment');
+let async = require('async');
+
+const GDAX_HOST_NAME = 'api.gdax.com';
+let COINBASE_HOST_NAME = 'api.coinbase.com';
 
 /**
  * Builds and returns the URL string for a request to the Coinbase spot price endpoint.
  *
  * @param currencyPair: string: currency to convert from and to, of the format TCU-FCU
  * @param date: string:         date of format YYYY-MM-DD
- * @returns string:             URL to query to get the spot price of the given currencyPair for the given date
+ * @returns string:             path and query parameters to get the spot price of the given currencyPair for the given date
  */
-exports.makeSpotUrl = function (currencyPair, date) {
-    return `https://api.coinbase.com/v2/prices/${currencyPair}/spot?date=${date}`;
+exports.makeCoinBaseSpotPath = function (currencyPair, date) {
+    return `/v2/prices/${currencyPair}/spot?date=${date}`;
 };
 
 /**
- * Gets the current price for the given currency pair.
+ * Builds and returns the URL string for a request to the GDAX historical rates endpoint.
+ *
+ * @param currencyPair: string:     ID of the currency pair to create request path for of the format BAS-CUR
+ * @param startDate: string:        date of the start of the range to get rates for, of ISO format
+ * @param endDate: string:          date of the end of the range to get rates for, of ISO format
+ * @param granularity: string:      frequency of data sample in seconds. higher is less frequent.
+ * @returns string:                 path and query parameters to get the historical rates of the given currency pair for the given date range
+ */
+exports.makeGDAXHistoricalRatesPath = function (currencyPair, startDate, endDate, granularity) {
+    return `/products/${currencyPair}/candles?start=${startDate}&end=${endDate}&granularity=${granularity}`;
+};
+
+/**
+ * Gets the current price for the given currency pair from the Coinbase API.
  *
  * @param currencyPair: string: currency to convert from and to, of the format: TCU-FCU
  * @param callback: function:
@@ -26,24 +43,29 @@ exports.getCurrentPrice = function (currencyPair, callback) {
 };
 
 /**
- * Fetches data from the given Coinbase API endpoint.
+ * Fetches JSON data from an API endpoint.
  *
- * @param url: string:          URL to make the GET request to
+ * @param hostName: string:     name of the host for the URL (e.g.: 'api.gdax.com')
+ * @param path: string:         name of the path for the URL (e.g.: '/products/BTC-USD/')
  * @param callback: function:
  * @returns object:             data returned by GET to url
  */
-exports.getJSONFromApi = function (url, callback) {
-    https.get(url, (res) => {
-        res.on('data', (bin) => {
-            callback(JSON.parse(bin));
-        })
+exports.getJsonFromApi = function (hostName, path, callback) {
+    https.get({ hostname: hostName, path: path, headers: {'User-Agent': 'curl/7.47.0'}},(res) => {
+        if (res.statusCode === 200) {
+            res.on('data', (bin) => {
+                callback(JSON.parse(bin));
+            })
+        } else {
+            throw new Error('Response to GET was unexpected: ' + res.statusCode + ' ' + res.statusMessage);
+        }
     }).on('error', (err) => {
         console.log(err);
     });
 };
 
 /**
- * Makes the GET request to the spot price API and return the resulting price data.
+ * Gets the spot price of a currency pair from the Coinbase API at the given date.
  *
  * @param currencyPair: string:  currency pair of the format TCU-FCU
  * @param date: string:          string of the date of the format YYYY-MM-DD
@@ -51,52 +73,42 @@ exports.getJSONFromApi = function (url, callback) {
  * @returns amt: number:         current price for the given currency pair
  */
 exports.getSpotPrice = function (currencyPair, date, callback) {
-    this.getJSONFromApi(this.makeSpotUrl(currencyPair, date), (json) => {
+    this.getJsonFromApi(COINBASE_HOST_NAME, this.makeCoinBaseSpotPath(currencyPair, date), (json) => {
         callback(json.data.amount);
     })
 };
 
 /**
- * Return a list of days for the given year with the associated price
- * The order of the list is not guaranteed to be chronological
+ * Returns the time, low, high, open, close and volume for a currency pair in a range of time in a given time interval from the GDAX API.
+ * A request that returns over 200 data points will be rejected.
  *
- * @param currencyPair: string:         currency pair of the format TCU-FCU
- * @param year: string:                 year to get prices for
- * @param callback: function:
- * @returns days: list of objects:      object for each day of the format {date, price}
+ * @param currencyPair: string:             currencies to convert from and to of the format TCU-FCU
+ * @param startDate: string:                lower bounds of time interval to get data for
+ * @param endDate: string:                  upper bounds of time interval to get data for
+ * @param granularity: number:              frequency in seconds by which to get data in the given time range (higher is less frequent)
+ * @param callback
+ * @returns intervalData: array of objects: an object describing the attributes of a currency for a point in time determined by the granularity
  */
-exports.getDailyPricesForHistoricalYear = function (currencyPair, year, callback) {
-
-    let days = [];
-    let daysRemaining = 365;
-    const months = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-    months.forEach((daysInMonth, i) => {
-        // ensure the month is 2 digits long and is not zero indexed
-        let iAsMonth = (i < 9) ? '0' + (i + 1) : i + 1;
-        for (let day = 1; day <= daysInMonth; day++) {
-            // ensure the day is 2 digits long
-            let normalizedDay = (day.toString().length === 2) ? day : '0' + day;
-            let parsedDate = `${year}-${iAsMonth}-${normalizedDay}`;
-            this.getSpotPrice(currencyPair, parsedDate, (amt) => {
-                days.push({date: parsedDate, price: amt});
-
-                // only invoke callback if all the requests are complete
-                if (--daysRemaining === 0)
-                    callback(days);
-            });
-        }
-    });
+exports.getGDAXHistoricalRates = function (currencyPair, startDate, endDate, granularity, callback) {
+    let url = this.makeGDAXHistoricalRatesPath(currencyPair, startDate, endDate, granularity);
+    this.getJsonFromApi(GDAX_HOST_NAME, url, (ratesArray) => {
+        let intervalData = [];
+        async.each(ratesArray, (ratesGroup, next) => {
+            intervalData.push({time: ratesGroup[0], low: ratesGroup[1], high: ratesGroup[2], open: ratesGroup[3], close: ratesGroup[4], volume: ratesGroup[5]});
+            next();
+        });
+        callback(intervalData);
+    })
 };
 
 /**
- * Return a list of days in the given range (inclusive) and their associated prices
+ * Gets the daily price of a currency pair in the given date range from the Coinbase API.
  *
  * @param currencyPair: string:         currencies to convert from and to of the format TCU-FCU
  * @param startDate: string:            string of the date to start on of the format YYYY-MM-DD
  * @param endDate: string:              string of the date to end on of the format YYYY-MM-DD
  * @param callback: function:
- * @returns days: list of objects:    object for each day of the format {date, price}
+ * @returns days: array of objects:     object for each day of the format {date, price}
  */
 exports.getDailyPricesInRange = function (currencyPair, startDate, endDate, callback) {
 
@@ -116,7 +128,7 @@ exports.getDailyPricesInRange = function (currencyPair, startDate, endDate, call
 /**
  * Returns the average of a number of prices
  *
- * @param prices: list of numbers:    prices to average
+ * @param prices: array of numbers:    prices to average
  * @returns number:                 average of the given prices
  */
 exports.getAvgPrice = function (prices) {
@@ -131,7 +143,7 @@ exports.getAvgPrice = function (prices) {
 };
 
 /**
- * Returns a string of the 200 day moving average price for the given currency pair
+ * Returns a string of the 200 day moving average price for the given currency pair. Prices pulled from the Coinbase API.
  *
  * @param currencyPair: string: currencies to convert from and to of the format TCU-FCU
  * @param callback: function:
@@ -152,7 +164,7 @@ exports.get200DayMovingAverage = function (currencyPair, callback) {
 };
 
 /**
- * Returns the number of days between two dates
+ * Returns the number of days between two dates.
  *
  * @param startDate: string:    start of the date range
  * @param endDate: string:      end of the date range
@@ -163,12 +175,12 @@ exports.findDaysBetweenDates = function (startDate, endDate) {
 };
 
 /**
- * Get the current Mayer Index: the current price divided by the 200 day moving average.
+ * Gets the current Mayer Multiple: the current price divided by the 200 day moving average.
  *
  * @param callback
  * @returns number: current price divided by the 200DMA
  */
-exports.getMayerIndex = function (callback) {
+exports.getmayerMultiple = function (callback) {
     this.get200DayMovingAverage('BTC-USD', (avg) => {
         this.getCurrentPrice('BTC-USD', (currentPrice) => {
             callback(currentPrice / avg);

@@ -1,17 +1,17 @@
 const www = require('./www.js');
-const Calcs = require('./libs/apis');
 const SendMail = require('./libs/sendmail');
 const fs = require('fs');
 const path = require('path');
 const async = require('async');
 
 let currentPrice = 0;
-let mayerIndex = 0;
+let mayerMultiple = 0;
 let twoHundredDayMovingAverage = 0;
 let lastUpdated = 0;
 
 
 // TODO cache recent currency pair data
+// TODO refactor email updates to users from DB instead of extinct user.txt
 run = function () {
 
     www.start();
@@ -28,7 +28,7 @@ run = function () {
                             'Bitcoin\n' + '\n' + '\n' +
                             'Current Price: ' + currentPrice + '\n' +
                             '200 Daily Moving Average: ' + twoHundredDayMovingAverage + '\n' +
-                            'Mayer Index: ' + mayerIndex + '\n' + '\n' +
+                            'Mayer Multiple: ' + mayerMultiple + '\n' + '\n' +
                             'calerts', () => {
                                 console.log('Mail to ' + user + ' sent.');
                             });
@@ -38,8 +38,8 @@ run = function () {
     }, 60000 * 60 * 12); // twelve hours
 };
 
-exports.getMayerIndex = function() {
-   return mayerIndex;
+exports.getmayerMultiple = function() {
+   return mayerMultiple;
 };
 
 exports.getTwoHundredDMA = function() {

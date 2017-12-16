@@ -2,8 +2,10 @@ let MongoClient = require('mongodb').MongoClient;
 let assert = require('assert');
 
 // Connection url
-const DB_URL = 'mongodb://localhost:27017/calerts';
+const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
 
+// TODO start seeding historical data into the db in new collection btcusdHistorical
+// TODO so something about duplicate collection entries crashing the server
 
 /* U S E R S   -   C R U D   O P E R A T I O N S */
 /**
@@ -71,13 +73,14 @@ exports.deleteUser = function (filterObject, callback) {
  *
  */
 
-exports.saveEmail = function(recipientAddress, date, email, callback) {
+exports.saveEmail = function(recipientAddress, date, email, type, callback) {
     connectToCollection(DB_URL, 'emails',(db, collection) => {
         collection.insertOne(
             {
                 recipientAddress,
                 date,
-                email
+                email,
+                type
             },
             (err, res) => {
                 assert.equal(null, err);
