@@ -4,10 +4,9 @@ let assert = require('assert');
 // Connection url
 const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
 
-// TODO start seeding historical data into the db in new collection btcusdHistorical
-
-/* U S E R S   -   C R U D   O P E R A T I O N S */
 /**
+ * TODO start seeding historical data into the db in new collection btcusdHistorical
+ *
  * Index: emailAddress (unique)
  *
  * Fields:
@@ -17,6 +16,8 @@ const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
  *  currencyPairs
  *  isVerified
  */
+
+/* U S E R S   -   C R U D   O P E R A T I O N S */
 
 exports.createUser = function(emailAddress, password, callback) {
     connectToCollection(DB_URL, 'users',(db, collection) => {
@@ -38,9 +39,9 @@ exports.createUser = function(emailAddress, password, callback) {
     })
 };
 
-exports.findUser = function(queryObject, callback) {
+exports.findUser = function(query, callback) {
     connectToCollection(DB_URL, 'users', (db, collection) => {
-        collection.findOne( queryObject, (err, doc) => {
+        collection.findOne( query, (err, doc) => {
             assert.equal(null, err);
             db.close();
             callback(doc);
@@ -48,9 +49,9 @@ exports.findUser = function(queryObject, callback) {
     })
 };
 
-exports.updateUser = function(filterObject, queryObject, callback) {
+exports.updateUser = function(filter, query, callback) {
     connectToCollection(DB_URL, 'users', (db, collection) => {
-        collection.updateOne(filterObject, queryObject, (err, doc) => {
+        collection.updateOne(filter, query, (err, doc) => {
             assert.equal(null, err);
             assert.equal(1, doc.result.ok);
             assert.equal(1, doc.result.nModified);
@@ -61,9 +62,9 @@ exports.updateUser = function(filterObject, queryObject, callback) {
     })
 };
 
-exports.deleteUser = function (filterObject, callback) {
+exports.deleteUser = function (filter, callback) {
     connectToCollection(DB_URL, 'users', (db, collection) => {
-        collection.deleteOne( filterObject, null, (err, res) => {
+        collection.deleteOne( filter, null, (err, res) => {
             assert.equal(null, err);
             db.close();
             callback(res);
@@ -73,11 +74,10 @@ exports.deleteUser = function (filterObject, callback) {
 
 
 
-/* E M A I L S   -   C R U D   O P E R A T I O N S */
 /**
  * Indexes: recipientAddress, date (compound, unique)
  *
- * Fields
+ * Fields:
  *  recipientAddress
  *  date
  *  email
@@ -85,14 +85,17 @@ exports.deleteUser = function (filterObject, callback) {
  *  isActive
  */
 
-exports.saveEmail = function(recipientAddress, date, email, type, callback) {
+/* E M A I L S   -   C R U D   O P E R A T I O N S */
+
+exports.saveEmail = function(recipientAddress, time, email, type, isActive, callback) {
     connectToCollection(DB_URL, 'emails',(db, collection) => {
         collection.insertOne(
             {
                 recipientAddress,
-                date,
+                time,
                 email,
-                type
+                type,
+                isActive
             },
             (err, res) => {
                 assert.equal(null, err);
@@ -104,9 +107,9 @@ exports.saveEmail = function(recipientAddress, date, email, type, callback) {
     })
 };
 
-exports.findEmail = function(queryObject, callback) {
+exports.findEmail = function(query, callback) {
     connectToCollection(DB_URL, 'emails', (db, collection) => {
-        collection.findOne( queryObject, (err, doc) => {
+        collection.findOne( query, (err, doc) => {
             assert.equal(null, err);
             db.close();
             callback(doc);
@@ -114,6 +117,25 @@ exports.findEmail = function(queryObject, callback) {
     })
 };
 
+exports.updateEmails = function(filter, update, callback) {
+    connectToCollection(DB_URL, 'emails', (db, collection) => {
+        collection.updateMany(filter, update, (err, res) => {
+            assert.equal(null, err);
+            db.close();
+            callback(res);
+        })
+    })
+};
+
+exports.findEmails = function(filter, callback) {
+    connectToCollection(DB_URL, 'emails', (db, collection) => {
+        collection.find().filter(filter).toArray((err, docs) => {
+            assert.equal(null, err);
+            db.close();
+            callback(docs);
+        })
+    })
+};
 
 /* D A T A B A S E   U T I L I T Y   F U N C T I O N S */
 

@@ -18,13 +18,14 @@ router.post('/', (req, res) => {
     db.findUser({emailAddress: req.body.emailAddress}, (user) => {
 
         if (user !== null) {
-            if (user.isVerified === true)
+            if (user.isVerified === true) {
                 res.send('User already exists.');   // user exists and is verified
-            else
+            } else {
+                res.sendStatus(200);
                 sendUserVerificationEmail();        // user exists but is not verified (send a new verification email)
+            }
         } else {
             res.sendStatus(200);
-
             sendUserVerificationEmail();            // user does not exist
 
             db.createUser(req.body.emailAddress, req.body.password, (res) => {

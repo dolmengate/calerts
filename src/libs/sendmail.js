@@ -34,6 +34,17 @@ exports.send = function (senderAddress, subject, recipientAddress, message, type
         callback();
     });
 
+    // disallow simultaneously active verification emails for a single user
+    deactivateVerificationEmailsForUser(recipientAddress, (res) => {
+        console.log('User ' + recipientAddress + ' verification emails set inactive');
+    });
+
     // don't wait for async write to DB to complete
-    db.saveEmail(recipientAddress, new Date().getTime(), email, type,() => { console.log('Email saved')});
+    db.saveEmail(recipientAddress, new Date().getTime(), email, type, true, () => { console.log('Email saved')});
+};
+
+deactivateVerificationEmailsForUser = function (recipientAddress, callback) {
+    db.updateEmails({recipientAddress: recipientAddress, type: 'verification', isActive: true}, {$set: {isActive: false} }, (res) => {
+        callback(res);
+    });
 };
