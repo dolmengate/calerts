@@ -12,19 +12,38 @@ router.get('/', (req, res) => {
 
 //     TODO create hash to use as confirmation email param
 //     TODO generate confirmation URL with user hash
+//     TODO deactivate any verification emails previously sent before sending a new one
 router.post('/', (req, res) => {
 
-    res.sendStatus(200);
-    sendmail.send(
-        'calertsverify@sroman.info',
-        'Please verify your email',
-        req.body.emailAddress,
-        'message here',
-        () => {
+    db.findUser({emailAddress: req.body.emailAddress}, (user) => {
+
+        if (user !== null) {
+            if (user.isVerified === true)
+                res.send('User already exists.');   // user exists and is verified
+            else
+                sendUserVerificationEmail();        // user exists but is not verified (send a new verification email)
+        } else {
+            res.sendStatus(200);
+
+            sendUserVerificationEmail();            // user does not exist
+
             db.createUser(req.body.emailAddress, req.body.password, (res) => {
-                console.log('User created');
+                console.log('User ' + req.body.emailAddress + ' created');
             });
-        });
+        }
+    });
+
+    let sendUserVerificationEmail = function () {
+        sendmail.send(
+            'calertsverify@sroman.info',
+            'Please verify your email',
+            req.body.emailAddress,
+            'MESSAGE AND VERIFICATION LINK HERE',
+            'verification',
+            function () {
+                console.log('Verification email sent to user ' + req.body.emailAddress);
+            });
+    };
 });
 
 router.post('/confirm', (req, res) => {

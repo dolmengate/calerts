@@ -5,11 +5,17 @@ let assert = require('assert');
 const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
 
 // TODO start seeding historical data into the db in new collection btcusdHistorical
-// TODO so something about duplicate collection entries crashing the server
 
 /* U S E R S   -   C R U D   O P E R A T I O N S */
 /**
  * Index: emailAddress (unique)
+ *
+ * Fields:
+ *  emailAddress
+ *  password
+ *  updateFrequency
+ *  currencyPairs
+ *  isVerified
  */
 
 exports.createUser = function(emailAddress, password, callback) {
@@ -71,6 +77,12 @@ exports.deleteUser = function (filterObject, callback) {
 /**
  * Indexes: recipientAddress, date (compound, unique)
  *
+ * Fields
+ *  recipientAddress
+ *  date
+ *  email
+ *  type
+ *  isActive
  */
 
 exports.saveEmail = function(recipientAddress, date, email, type, callback) {
@@ -108,7 +120,7 @@ exports.findEmail = function(queryObject, callback) {
 connectToCollection = function(DB_URL, coll, callback) {
     MongoClient.connect(DB_URL, (err, db) => {
         assert.equal(null, err);
-        console.log('Connected to mongodb server on ' + DB_URL);
+        console.log('Connected to mongodb server on ' + DB_URL + ' for collection ' + coll);
 
         callback(db, db.collection(coll));
     });

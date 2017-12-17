@@ -10,9 +10,10 @@ const db = require('../db');
  * @param subject: string:              subject line
  * @param recipientAddress: string:     email addresses of recipient
  * @param message: string:              the content of the email (the message itself)
+ * @param type: string:                 the reason for the email being sent ('verification' or 'scheduled-alert')
  * @param callback
  */
-exports.send = function (senderAddress, subject, recipientAddress, message, callback) {
+exports.send = function (senderAddress, subject, recipientAddress, message, type, callback) {
 
     // construct email content
     let email =
@@ -34,5 +35,5 @@ exports.send = function (senderAddress, subject, recipientAddress, message, call
     });
 
     // don't wait for async write to DB to complete
-    db.saveEmail(recipientAddress, new Date().getTime(), email, () => { console.log('Email saved')});
+    db.saveEmail(recipientAddress, new Date().getTime(), email, type,() => { console.log('Email saved')});
 };
