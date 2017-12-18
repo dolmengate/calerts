@@ -31,15 +31,22 @@ router.post('/', (req, res) => {
     });
 });
 
-router.post('/confirm/:uvhash', (req, res) => {
-    // req.params.uvhash
 
-    // TODO confirm verification hash sent in URL matches userVerificationHash
-    // let emailAddress = stored user verification hash
-    // if url encoded hash === userVerificationHash
-    // databaseAccess.updateUser({emailAddress: emailAddress}, { $set: {isVerified: true}}, (res) => {
-    //   console.log(res);
-    //};
+router.get('/confirm/:verificationHash', (req, res) => {
+
+    // set user to verified and deactivate the verification email
+    databaseAccess.findEmail({'verify.uvHash' : req.params.verificationHash, 'verify.isActive': true}, (email) => {
+        if (email !== null) {
+            databaseAccess.updateUser({emailAddress: email.recipientAddress, isVerified: false}, {$set: {isVerified: true} }, (op) => {
+                databaseAccess.updateEmail({recipientAddress: email.recipientAddress, 'verify.isActive': true}, {$set: {'verify.isActive': false} }, (op) => {
+                    res.send('User ' + email.recipientAddress + ' verified!');
+                    // TODO render login page with res.body.newlyVerified === true or something (show message prompting user to login)
+                })
+            })
+        } else {
+            res.send('That user verification email has expired.')
+        }
+    })
 });
 
 
@@ -65,7 +72,7 @@ sendUserVerificationEmail = function (userEmail) {
 };
 
 /**
- * Create a user verification email that cannot be guessed by those who know the user's email address.
+ * Create a hash digest for the user's verification email.
  *
  * @param userEmail: string:    the email of the user whose account must be verified
  * @param callback

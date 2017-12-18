@@ -69,7 +69,7 @@ exports.start = function () {
         err.status = 404;
     });
 
-    server.listen(8080);
+    server.listen(PORT);
     console.log('app listening on port: ' + PORT);
 };
 
