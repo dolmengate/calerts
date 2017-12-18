@@ -12,7 +12,7 @@ let COINBASE_HOST_NAME = 'api.coinbase.com';
  * @param date: string:         date of format YYYY-MM-DD
  * @returns string:             path and query parameters to get the spot price of the given currencyPair for the given date
  */
-exports.makeCoinBaseSpotPath = function (currencyPair, date) {
+exports.makeCoinbaseSpotPath = function (currencyPair, date) {
     return `/v2/prices/${currencyPair}/spot?date=${date}`;
 };
 
@@ -73,7 +73,7 @@ exports.getJsonFromApi = function (hostName, path, callback) {
  * @returns amt: number:         current price for the given currency pair
  */
 exports.getSpotPrice = function (currencyPair, date, callback) {
-    this.getJsonFromApi(COINBASE_HOST_NAME, this.makeCoinBaseSpotPath(currencyPair, date), (json) => {
+    this.getJsonFromApi(COINBASE_HOST_NAME, this.makeCoinbaseSpotPath(currencyPair, date), (json) => {
         callback(json.data.amount);
     })
 };
@@ -180,7 +180,7 @@ exports.findDaysBetweenDates = function (startDate, endDate) {
  * @param callback
  * @returns number: current price divided by the 200DMA
  */
-exports.getmayerMultiple = function (callback) {
+exports.getMayerMultiple = function (callback) {
     this.get200DayMovingAverage('BTC-USD', (avg) => {
         this.getCurrentPrice('BTC-USD', (currentPrice) => {
             callback(currentPrice / avg);

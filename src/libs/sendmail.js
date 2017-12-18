@@ -1,5 +1,5 @@
 const child_process = require('child_process');
-const db = require('../db');
+const databaseAccess = require('../dbaccess');
 
 /**
  * Use the Ubuntu Sendmail utility to send an email to someone
@@ -10,10 +10,21 @@ const db = require('../db');
  * @param subject: string:              subject line
  * @param recipientAddress: string:     email addresses of recipient
  * @param message: string:              the content of the email (the message itself)
+ * @param uvHash                        user verification hash: the route used for a user verification email
  * @param type: string:                 the reason for the email being sent ('verification' or 'scheduled-alert')
  * @param callback
  */
-exports.send = function (senderAddress, subject, recipientAddress, message, type, callback) {
+exports.send = function (senderAddress, subject, recipientAddress, message, uvHash, type, callback) {
+
+    // disallow simultaneously active verification emails for a single user
+    if (type === 'verification') {
+        deactivateVerificationEmailsForUser(recipientAddress, (res) => {
+            console.log('Existing verification emails for user ' + recipientAddress + ' set inactive');
+            databaseAccess.saveEmail(recipientAddress, new Date().getTime(), type, {isActive: true, uvHash: uvHash}, () => { console.log('Email saved')});
+        });
+    } else {
+        databaseAccess.saveEmail(recipientAddress, new Date().getTime(), type, {isActive: null, uvHash: null}, () => { console.log('Email saved')});
+    }
 
     // construct email content
     let email =
@@ -33,18 +44,10 @@ exports.send = function (senderAddress, subject, recipientAddress, message, type
         if (err) throw err;
         callback();
     });
-
-    // disallow simultaneously active verification emails for a single user
-    deactivateVerificationEmailsForUser(recipientAddress, (res) => {
-        console.log('User ' + recipientAddress + ' verification emails set inactive');
-    });
-
-    // don't wait for async write to DB to complete
-    db.saveEmail(recipientAddress, new Date().getTime(), email, type, true, () => { console.log('Email saved')});
 };
 
 deactivateVerificationEmailsForUser = function (recipientAddress, callback) {
-    db.updateEmails({recipientAddress: recipientAddress, type: 'verification', isActive: true}, {$set: {isActive: false} }, (res) => {
+    databaseAccess.updateEmails({recipientAddress: recipientAddress, type: 'verification', 'verify.isActive': true}, {$set: {'verify.isActive': false} }, (res) => {
         callback(res);
     });
 };

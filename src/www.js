@@ -31,7 +31,7 @@ exports.start = function () {
             // prevent WebSocket from throwing 'not opened' error
             if (socket.readyState === WebSocket.OPEN) {
                 apis.get200DayMovingAverage('BTC-USD', (tdma) => {
-                    apis.getmayerMultiple((mi) => {
+                    apis.getMayerMultiple((mi) => {
                         apis.getCurrentPrice('BTC-USD', (cp) => {
                             socket.send(
                                 JSON.stringify(

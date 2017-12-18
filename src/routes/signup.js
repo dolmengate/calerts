@@ -2,60 +2,80 @@
 const express = require('express');
 const router = express.Router();
 const sendmail = require('../libs/sendmail');
-const db = require('../db');
-
-// let userVerificationHash = 0;
+const databaseAccess = require('../dbaccess');
+const crypto = require('crypto');
 
 router.get('/', (req, res) => {
     res.render('signup');
 });
 
-//     TODO create hash to use as confirmation email param
-//     TODO generate confirmation URL with user hash
-//     TODO deactivate any verification emails previously sent before sending a new one
 router.post('/', (req, res) => {
 
-    db.findUser({emailAddress: req.body.emailAddress}, (user) => {
+    databaseAccess.findUser({emailAddress: req.body.emailAddress}, (user) => {
 
         if (user !== null) {
             if (user.isVerified === true) {
-                res.send('User already exists.');   // user exists and is verified
+                res.send('User already exists.');                   // user exists and is verified
             } else {
                 res.sendStatus(200);
-                sendUserVerificationEmail();        // user exists but is not verified (send a new verification email)
+                sendUserVerificationEmail(req.body.emailAddress);   // user exists but is not verified (send a new verification email)
             }
         } else {
             res.sendStatus(200);
-            sendUserVerificationEmail();            // user does not exist
+            sendUserVerificationEmail(req.body.emailAddress);       // user does not exist
 
-            db.createUser(req.body.emailAddress, req.body.password, (res) => {
+            databaseAccess.createUser(req.body.emailAddress, (res) => {
                 console.log('User ' + req.body.emailAddress + ' created');
             });
         }
     });
-
-    let sendUserVerificationEmail = function () {
-        sendmail.send(
-            'calertsverify@sroman.info',
-            'Please verify your email',
-            req.body.emailAddress,
-            'MESSAGE AND VERIFICATION LINK HERE',
-            'verification',
-            function () {
-                console.log('Verification email sent to user ' + req.body.emailAddress);
-            });
-    };
 });
 
-router.post('/confirm', (req, res) => {
-    // req.url ?
+router.post('/confirm/:uvhash', (req, res) => {
+    // req.params.uvhash
 
     // TODO confirm verification hash sent in URL matches userVerificationHash
-    // let emailAddress = email pulled from verification hash?
+    // let emailAddress = stored user verification hash
     // if url encoded hash === userVerificationHash
-    // db.updateUser({emailAddress: emailAddress}, { $set: {isVerified: true}}, (res) => {
+    // databaseAccess.updateUser({emailAddress: emailAddress}, { $set: {isVerified: true}}, (res) => {
     //   console.log(res);
     //};
 });
+
+
+/**
+ * Send an email to the user to verify their account.
+ *
+ * @param userEmail: string:    the email of the user whose account must be verified
+ */
+sendUserVerificationEmail = function (userEmail) {
+    createUserVerificationHash(userEmail, (uvHash) => {
+        const baseUrl = 'http://www.sroman.info/calerts/signup/confirm/';
+
+        sendmail.send(
+            'calertsverify@sroman.info',
+            'Please verify your email',
+            userEmail,
+            'Click this link to verify your email address: ' + baseUrl + uvHash,
+            uvHash,
+            'verification',
+            function () { console.log('Verification email sent to user ' + userEmail); }
+        )
+    })
+};
+
+/**
+ * Create a user verification email that cannot be guessed by those who know the user's email address.
+ *
+ * @param userEmail: string:    the email of the user whose account must be verified
+ * @param callback
+ * @returns                     a unique hash digest to create the user verification link to be emailed to the unverified user
+ */
+createUserVerificationHash = function (userEmail, callback) {
+    const hash = crypto.createHash('sha256');
+
+    hash.update(userEmail + new Date()); // this could be anything
+    callback(hash.digest('hex'));
+};
 
 module.exports = router;

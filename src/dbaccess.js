@@ -19,12 +19,12 @@ const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
 
 /* U S E R S   -   C R U D   O P E R A T I O N S */
 
-exports.createUser = function(emailAddress, password, callback) {
+exports.createUser = function(emailAddress, callback) {
     connectToCollection(DB_URL, 'users',(db, collection) => {
         collection.insertOne(
             {
                 emailAddress,
-                password,
+                password: null,
                 updateFrequency: 0,
                 currencyPairs: ['BTC-USD'],
                 isVerified: false
@@ -78,24 +78,22 @@ exports.deleteUser = function (filter, callback) {
  * Indexes: recipientAddress, date (compound, unique)
  *
  * Fields:
- *  recipientAddress
- *  date
- *  email
- *  type
- *  isActive
+ *  recipientAddress: string
+ *  time: number
+ *  type: string
+ *  verify: object - { isActive: boolean, uvHash: string }
  */
 
 /* E M A I L S   -   C R U D   O P E R A T I O N S */
 
-exports.saveEmail = function(recipientAddress, time, email, type, isActive, callback) {
+exports.saveEmail = function(recipientAddress, time, type, verify, callback) {
     connectToCollection(DB_URL, 'emails',(db, collection) => {
         collection.insertOne(
             {
                 recipientAddress,
                 time,
-                email,
                 type,
-                isActive
+                verify
             },
             (err, res) => {
                 assert.equal(null, err);
@@ -114,6 +112,16 @@ exports.findEmail = function(query, callback) {
             db.close();
             callback(doc);
         });
+    })
+};
+
+exports.updateEmail = function(filter, update, callback) {
+    connectToCollection(DB_URL, 'emails', (db, collection) => {
+        collection.updateOne(filter, update, (err, res) => {
+            assert.equal(null, err);
+            db.close();
+            callback(res);
+        })
     })
 };
 
