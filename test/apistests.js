@@ -120,4 +120,13 @@ describe('asynchronous functions', () => {
             })
         })
     })
+//
+    describe('apis.getGdaxHistoricalRates(currencyPair, startDate, endDate, granularity, callback)', () => {
+        it('should historical data from the GDAX historical rates endpoint', (done) => {
+            apis.getGDAXHistoricalRates('BTC-USD', moment(new Date()).add(-3, 'days').toISOString(), new Date().toISOString(), 60 * 60 * 24, (intervalData) => {
+                console.log(intervalData);
+                done();
+            })
+        })
+    })
 });

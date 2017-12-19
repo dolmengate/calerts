@@ -4,10 +4,10 @@ let assert = require('assert');
 // Connection url
 const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
 
+// TODO user session storage
+
 /**
- * TODO start seeding historical data into the db in new collection btcusdHistorical
- *
- * Index: emailAddress (unique)
+ *  Users
  *
  * Fields:
  *  emailAddress
@@ -17,14 +17,14 @@ const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
  *  isVerified
  */
 
-/* U S E R S   -   C R U D   O P E R A T I O N S */
+/*  C R U D   O P E R A T I O N S */
 
-exports.createUser = function(emailAddress, callback) {
+exports.createUser = function(emailAddress, password, callback) {
     connectToCollection(DB_URL, 'users',(db, collection) => {
         collection.insertOne(
             {
                 emailAddress,
-                password: null,
+                password,
                 updateFrequency: 0,
                 currencyPairs: ['BTC-USD'],
                 isVerified: false
@@ -75,7 +75,7 @@ exports.deleteUser = function (filter, callback) {
 
 
 /**
- * Indexes: recipientAddress, date (compound, unique)
+ * Emails
  *
  * Fields:
  *  recipientAddress: string
@@ -84,7 +84,7 @@ exports.deleteUser = function (filter, callback) {
  *  verify: object - { isActive: boolean, uvHash: string }
  */
 
-/* E M A I L S   -   C R U D   O P E R A T I O N S */
+/* C R U D   O P E R A T I O N S */
 
 exports.saveEmail = function(recipientAddress, time, type, verify, callback) {
     connectToCollection(DB_URL, 'emails',(db, collection) => {
@@ -141,6 +141,31 @@ exports.findEmails = function(filter, callback) {
             assert.equal(null, err);
             db.close();
             callback(docs);
+        })
+    })
+};
+
+
+/**
+ * btcusdHistoricalData - one data point per day (the opening price)
+ *
+ * Fields:
+ *  time: number
+ *  low: number
+ *  high: number
+ *  open: number
+ *  close: number
+ *  volume: number
+ */
+
+/* C R U D    O P E R A T I O N S */
+
+exports.addBtcUsdHistoricalDataPoints = function(days, callback) {
+    connectToCollection(DB_URL, 'btcusdHistorical', (db, collection) => {
+        collection.insertMany(days, (err, res) => {
+            assert.equal(null, err);
+            db.close();
+            callback(res);
         })
     })
 };

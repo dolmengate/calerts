@@ -1,6 +1,5 @@
 
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 const sendmail = require('../libs/sendmail');
 const databaseAccess = require('../dbaccess');
 const crypto = require('crypto');
@@ -24,7 +23,7 @@ router.post('/', (req, res) => {
             res.sendStatus(200);
             sendUserVerificationEmail(req.body.emailAddress);       // user does not exist
 
-            databaseAccess.createUser(req.body.emailAddress, (res) => {
+            databaseAccess.createUser(req.body.emailAddress, req.body.password, (res) => {
                 console.log('User ' + req.body.emailAddress + ' created');
             });
         }

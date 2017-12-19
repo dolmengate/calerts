@@ -45,9 +45,12 @@ document.getElementById('signup-btn').onclick = (e) => {
             '/calerts/signup',
             {
                 emailAddress: document.getElementById('email').value,
+                password: document.getElementById('password').value
+
             }, function(res) {
                 console.log(res);
-                document.getElementById('email').value = '';
             }
         );
+    document.getElementById('email').value = '';
+    document.getElementById('password').value = '';
 };

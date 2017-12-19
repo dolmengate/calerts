@@ -87,7 +87,7 @@ exports.getSpotPrice = function (currencyPair, date, callback) {
  * @param endDate: string:                  upper bounds of time interval to get data for
  * @param granularity: number:              frequency in seconds by which to get data in the given time range (higher is less frequent)
  * @param callback
- * @returns intervalData: array of objects: an object describing the attributes of a currency for a point in time determined by the granularity
+ * @returns intervalData: array of objects: an object describing the attributes of a currency pair for a point in time determined by the granularity
  */
 exports.getGDAXHistoricalRates = function (currencyPair, startDate, endDate, granularity, callback) {
     let url = this.makeGDAXHistoricalRatesPath(currencyPair, startDate, endDate, granularity);

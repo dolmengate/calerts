@@ -1,6 +1,5 @@
 
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 
 // main route
 router.get('/', (req, res) => {

@@ -18,6 +18,7 @@ const wsserver = new WebSocket.Server( {server} );
 /* express routes */
 const dashboard = require('./routes/dashboard');
 const signup = require('./routes/signup');
+const login = require('./routes/login');
 
 exports.start = function () {
 
@@ -31,13 +32,13 @@ exports.start = function () {
             // prevent WebSocket from throwing 'not opened' error
             if (socket.readyState === WebSocket.OPEN) {
                 apis.get200DayMovingAverage('BTC-USD', (tdma) => {
-                    apis.getMayerMultiple((mi) => {
+                    apis.getMayerMultiple((mm) => {
                         apis.getCurrentPrice('BTC-USD', (cp) => {
                             socket.send(
                                 JSON.stringify(
                                     {
                                         twoHundredDayMovingAverage: tdma.toFixed(2),
-                                        mayerMultiple: mi.toFixed(1),
+                                        mayerMultiple: mm.toFixed(1),
                                         currentPrice: cp.toFixed(2)
                                     }
                                 ), null, (err) => { if (err) throw err; })
@@ -59,9 +60,10 @@ exports.start = function () {
     app.use(bodyParser.urlencoded());
     app.use(bodyParser.json());
 
-    /* Dashboard mapping */
+    /* Route mappings */
     app.use('/calerts/dashboard', dashboard);
     app.use('/calerts/signup', signup);
+    app.use('/calerts/login', login);
 
     // catch and forward 404
     app.use((req, res, next) => {

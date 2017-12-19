@@ -144,6 +144,50 @@ describe('database CRUD operations', () => {
             })
         })
     });
+
+
+    describe('databaseAccess.addBtcUsdHistoricalDataPoints(days, callback)', () => {
+        it('should add many data points into the db', (done) => {
+            prepareTestDb(() => {
+
+                // insert data points
+                MongoClient.connect(DB_TEST_URL, (err, db) => {
+                    assert.equal(null, err);
+                    const btcUsdHist = db.collection('btcusdHistorical');
+                    btcUsdHist.insertMany(
+                        [
+                            {time: 1234567899, low: 49239.43, high: 49892.4, open: 2482394, close: 4932.3, volume: 842834},
+                            {time: 9876543211, low: 59843.73, high: 39825.34, open: 35925.3, close: 953285.3, volume: 44},
+                            {time: 1928374655, low: 9258.54 , high: 5344.3, open: 5732.0, close: 4834.33, volume: 9941.1}
+                        ],
+                        function (err, res) {
+                            assert.equal(null, err);
+                            assert.equal(3, res.insertedCount);
+
+                            btcUsdHist.find().toArray((err, docs) => {
+                                assert.equal(null, err);
+                                assert.equal(1234567899, docs[0].time);
+                                assert.equal(49239.43, docs[0].low);
+                                assert.equal(49892.4, docs[0].high);
+                                assert.equal(2482394, docs[0].open);
+                                assert.equal(4932.3, docs[0].close);
+                                assert.equal(842834, docs[0].volume);
+
+                                assert.equal(1928374655, docs[2].time);
+                                assert.equal(9258.54, docs[2].low);
+                                assert.equal(5344.3, docs[2].high);
+                                assert.equal(5732.0, docs[2].open);
+                                assert.equal(4834.33, docs[2].close);
+                                assert.equal(9941.1, docs[2].volume);
+
+                                db.close();
+                                done();
+                            })
+                        })
+                })
+            })
+        })
+    });
 });
 
 function prepareTestDb(callback) {
