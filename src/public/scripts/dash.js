@@ -1,4 +1,4 @@
-let socket = new WebSocket('ws://localhost:8080');
+let socket = new WebSocket('wss://localhost:3000');
 
 // ensure all data is sent and close the socket before leaving the page
 window.onbeforeunload = () => {

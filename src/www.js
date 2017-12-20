@@ -1,18 +1,24 @@
 
+const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
 const apis = require('./libs/apis');
+const https = require('https');
 
-const PORT = '8080';
+const PORT = '3000';
 
 /* express setup */
 const express = require('express');
 const app = express();
 
+/* TLS setup */
+const server = https.createServer({
+    key: fs.readFileSync(path.join(__dirname, '..', 'test.key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, '..', 'test.crt.pem')),
+}, app);
+
 /* websocket server setup */
 const WebSocket = require('ws');
-
-const server = require('http').Server(app);
 const wsserver = new WebSocket.Server( {server} );
 
 /* express routes */
@@ -28,22 +34,18 @@ exports.start = function () {
             console.log(msg);
         });
 
+        // socket update loop
         setInterval(() => {
             // prevent WebSocket from throwing 'not opened' error
             if (socket.readyState === WebSocket.OPEN) {
-                apis.get200DayMovingAverage('BTC-USD', (tdma) => {
-                    apis.getMayerMultiple((mm) => {
-                        apis.getCurrentPrice('BTC-USD', (cp) => {
-                            socket.send(
-                                JSON.stringify(
-                                    {
-                                        twoHundredDayMovingAverage: tdma.toFixed(2),
-                                        mayerMultiple: mm.toFixed(1),
-                                        currentPrice: cp.toFixed(2)
-                                    }
-                                ), null, (err) => { if (err) throw err; })
-                        })
-                    })
+                getTickerData((tdma, mm, cp) => {
+                    socket.send(
+                        JSON.stringify(
+                            {
+                                twoHundredDayMovingAverage: tdma.toFixed(2),
+                                mayerMultiple: mm.toFixed(1),
+                                currentPrice: cp.toFixed(2)
+                            }), null, (err) => { if (err) throw err; })
                 })
             }
         }, 10000);  // ten seconds
@@ -75,3 +77,12 @@ exports.start = function () {
     console.log('app listening on port: ' + PORT);
 };
 
+function getTickerData(callback) {
+    apis.get200DayMovingAverage('BTC-USD', (tdma) => {
+        apis.getMayerMultiple((mm) => {
+            apis.getCurrentPrice('BTC-USD', (cp) => {
+                callback(tdma, mm, cp);
+            })
+        })
+    })
+}
