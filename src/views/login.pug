@@ -8,9 +8,9 @@ html
     body
         div(class='container')
             h2 Login
-            form(class="form-inline")
-                input(type="email" id='email' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='email address')
-                input(type="password" id='password' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='password')
+            form(class="form-inline" method='POST')
+                input(type="email" id='email' name ='email' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='email address')
+                input(type="password" id='password' name='password' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='password')
                 button(id='login-btn' class="btn btn-primary") Login
 
         script(src='https://code.jquery.com/jquery-3.2.1.min.js'

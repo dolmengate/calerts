@@ -39,18 +39,30 @@ socket.onclose = (e) => {
     document.getElementById('socket-status').setAttribute('class', 'badge badge-warning');
 };
 
-document.getElementById('signup-btn').onclick = (e) => {
-    e.preventDefault();
-    $.post(
+if (document.getElementById('signup-btn') !== null) {
+    document.getElementById('signup-btn').onclick = function (e) {
+        e.preventDefault();
+        $.post(
             '/calerts/signup',
             {
                 emailAddress: document.getElementById('email').value,
                 password: document.getElementById('password').value
 
-            }, function(res) {
+            }, function (res) {
                 console.log(res);
             }
         );
-    document.getElementById('email').value = '';
-    document.getElementById('password').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+    };
+}
+
+document.getElementById('session-test-btn').onclick = function () {
+    console.log('sess test');
+    $.post( '/calerts/dashboard', { message: 'do a thing' } );
+};
+
+document.getElementById('logout-btn').onclick = function () {
+    console.log('logout test');
+    $.post( '/calerts/logout', { message: 'logout' } );
 };

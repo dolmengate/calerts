@@ -31,10 +31,27 @@ html
 
             p#socket-status(class='badge badge-danger') Socket status
 
-            form(class="form-inline")
-                input(type="email" id='email' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='email address')
-                input(type="password" id='password' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='password')
-                button(id='signup-btn' class="btn btn-primary") Sign Up
+            if user !== undefined
+                p You are logged in as
+                    |
+                    |
+                    span= user.emailAddress
+                ul
+                    each pair in settings.currencyPairs
+                        each setting in pair
+                            li= setting
+
+                button(id='session-test-btn') Do session thing
+                button(id='logout-btn') Logout
+
+            else
+                form(class="form-inline")
+                    input(type="email" id='email' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='email address')
+                    input(type="password" id='password' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='password')
+                    button(id='signup-btn' class="btn btn-primary") Sign Up
+
+                p
+                    a(href='/calerts/login') or Login
 
         script(src='https://code.jquery.com/jquery-3.2.1.min.js'
                 crossorigin='anonymous')

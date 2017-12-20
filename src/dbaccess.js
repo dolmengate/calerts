@@ -4,17 +4,14 @@ let assert = require('assert');
 // Connection url
 const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
 
-// TODO user session storage
-
 /**
  *  Users
  *
  * Fields:
- *  emailAddress
- *  password
- *  updateFrequency
- *  currencyPairs
- *  isVerified
+ *  emailAddress: string
+ *  password: string
+ *  settings: object
+ *  isVerified: boolean
  */
 
 /*  C R U D   O P E R A T I O N S */
@@ -25,8 +22,19 @@ exports.createUser = function(emailAddress, password, callback) {
             {
                 emailAddress,
                 password,
-                updateFrequency: 0,
-                currencyPairs: ['BTC-USD'],
+                settings: {
+                    theme: 'light',
+                    currencyPairs: [
+                        {
+                            pair: 'BTC-USD',
+                            updateFrequency: 12,
+                        },
+                        {
+                            pair: 'ETH-USD',
+                            updateFrequency: 12,
+                        }
+                    ]
+                },
                 isVerified: false
             },
             (err, res) => {
@@ -71,8 +79,6 @@ exports.deleteUser = function (filter, callback) {
         });
     })
 };
-
-
 
 /**
  * Emails
