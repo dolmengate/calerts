@@ -4,6 +4,8 @@ let assert = require('assert');
 // Connection url
 const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
 
+// TODO add TTL index to verification emails (15 minutes)
+
 /**
  *  Users
  *
@@ -16,12 +18,13 @@ const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
 
 /*  C R U D   O P E R A T I O N S */
 
-exports.createUser = function(emailAddress, password, callback) {
+exports.createUser = function(emailAddress, salt, hash, callback) {
     connectToCollection(DB_URL, 'users',(db, collection) => {
         collection.insertOne(
             {
                 emailAddress,
-                password,
+                salt,
+                hash,
                 settings: {
                     theme: 'light',
                     currencyPairs: [

@@ -16,7 +16,6 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
     if (req.session.user !== undefined) {
         // do logged-in-required-thing here
-        console.log('you are logged in as ' + req.session.user.emailAddress);
         res.sendStatus(200);
     } else {
         res.redirect('login');

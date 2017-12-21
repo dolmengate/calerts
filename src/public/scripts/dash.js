@@ -58,11 +58,9 @@ if (document.getElementById('signup-btn') !== null) {
 }
 
 document.getElementById('session-test-btn').onclick = function () {
-    console.log('sess test');
-    $.post( '/calerts/dashboard', { message: 'do a thing' } );
+    $.post( '/calerts/dashboard');
 };
 
 document.getElementById('logout-btn').onclick = function () {
-    console.log('logout test');
-    $.post( '/calerts/logout', { message: 'logout' } );
+    $.post( '/calerts/logout');
 };

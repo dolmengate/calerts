@@ -23,9 +23,11 @@ router.post('/', (req, res) => {
             res.sendStatus(200);
             sendUserVerificationEmail(req.body.emailAddress);       // user does not exist
 
-            databaseAccess.createUser(req.body.emailAddress, req.body.password, (res) => {
-                console.log('User ' + req.body.emailAddress + ' created');
-            });
+            createPasswordHash(req.body.password, (salt, hash) => {
+                databaseAccess.createUser(req.body.emailAddress, salt, hash, (res) => {
+                    console.log('User ' + req.body.emailAddress + ' created');
+                });
+            })
         }
     });
 });
@@ -38,8 +40,9 @@ router.get('/confirm/:verificationHash', (req, res) => {
         if (email !== null) {
             databaseAccess.updateUser({emailAddress: email.recipientAddress, isVerified: false}, {$set: {isVerified: true} }, (op) => {
                 databaseAccess.updateEmail({recipientAddress: email.recipientAddress, 'verify.isActive': true}, {$set: {'verify.isActive': false} }, (op) => {
-                    res.send('User ' + email.recipientAddress + ' verified!');
-                    // TODO render login page with res.body.newlyVerified === true or something (show message prompting user to login)
+                    res.redirect('login', {
+                        message: 'User ' + email.recipientAddress + ' verified!'
+                    });
                 })
             })
         } else {
@@ -82,6 +85,17 @@ createUserVerificationHash = function (userEmail, callback) {
 
     hash.update(userEmail + new Date()); // this could be anything
     callback(hash.digest('hex'));
+};
+
+/**
+ * Create a salted password hash to store in the users record.
+ *
+ */
+createPasswordHash = function (password, callback) {
+    const salt = crypto.randomBytes(64);
+    crypto.pbkdf2(password, salt, 100000, 64, 'sha512', (err, hash) => {
+        callback(salt, hash);
+    })
 };
 
 module.exports = router;

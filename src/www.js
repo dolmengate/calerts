@@ -90,7 +90,7 @@ exports.start = function () {
                                 twoHundredDayMovingAverage: tdma.toFixed(2),
                                 mayerMultiple: mm.toFixed(1),
                                 currentPrice: cp.toFixed(2)
-                            }), (err) => { if (err) throw err; })
+                            }), (err) => { /* don't crash the server ffs */ })
                 })
             }
         }, 10000);  // ten seconds
