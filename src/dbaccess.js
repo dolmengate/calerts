@@ -25,16 +25,23 @@ exports.createUser = function(emailAddress, salt, hash, callback) {
                 emailAddress,
                 salt,
                 hash,
-                settings: {
+                settings: {             // settings.currencyPairs.btcusd.updateTimes
                     theme: 'light',
-                    currencyPairs: [
+                    currencyPairs: {
+                        btcusd: {
+                            name: 'BTC-USD',
+                            updateTimes: [
+                                {
+                                    hour: 1,
+                                    minutes: 0
+                                }
+                            ]
+                        }
+                    },
+                    alerts: [
                         {
-                            pair: 'BTC-USD',
-                            updateFrequency: 12,
-                        },
-                        {
-                            pair: 'ETH-USD',
-                            updateFrequency: 12,
+                            name: 'alertName',
+                            conditions: ''
                         }
                     ]
                 },
@@ -60,16 +67,19 @@ exports.findUser = function(query, callback) {
     })
 };
 
-exports.updateUser = function(filter, query, callback) {
+exports.findUsers = function(filter, callback) {
     connectToCollection(DB_URL, 'users', (db, collection) => {
-        collection.updateOne(filter, query, (err, doc) => {
+        callback(db, collection.find().filter(filter));
+    })
+};
+
+exports.updateUser = function(filter, update, callback) {
+    connectToCollection(DB_URL, 'users', (db, collection) => {
+        collection.findOneAndUpdate(filter, update, {returnOriginal: false}, (err, doc) => {
             assert.equal(null, err);
-            assert.equal(1, doc.result.ok);
-            assert.equal(1, doc.result.nModified);
-            assert.equal(1, doc.result.n);
             db.close();
             callback(doc);
-        })
+        });
     })
 };
 

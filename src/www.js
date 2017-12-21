@@ -83,7 +83,7 @@ exports.start = function () {
         setInterval(() => {
             // prevent WebSocket from throwing 'not opened' error
             if (socket.readyState === WebSocket.OPEN) {
-                getTickerData((tdma, mm, cp) => {
+                this.getTickerData('BTC-USD', (tdma, mm, cp) => {
                     socket.send(
                         JSON.stringify(
                             {
@@ -100,12 +100,12 @@ exports.start = function () {
     console.log('app listening on port: ' + PORT);
 };
 
-function getTickerData(callback) {
-    apis.get200DayMovingAverage('BTC-USD', (tdma) => {
+exports.getTickerData = function (currencyPair, callback) {
+    apis.get200DayMovingAverage(currencyPair, (tdma) => {
         apis.getMayerMultiple((mm) => {
-            apis.getCurrentPrice('BTC-USD', (cp) => {
+            apis.getCurrentPrice(currencyPair, (cp) => {
                 callback(tdma, mm, cp);
             })
         })
     })
-}
+};

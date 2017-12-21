@@ -9,7 +9,6 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
     dbAccess.findUser({emailAddress: req.body.email, isVerified: true}, (user) => {
-        console.log(typeof user.salt.buffer);
         createPasswordAttemptHash(req.body.password, user.salt.buffer, (attemptHash) => {
             if (Buffer.compare(attemptHash,user.hash.buffer) === 0) {
                 req.session.regenerate((err) => {

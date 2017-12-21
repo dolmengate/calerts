@@ -35,7 +35,7 @@ describe('database CRUD operations', () => {
                 // create a test user
                 databaseAccess.saveEmail(
                     'test@test.com',
-                    new Date().getTime(),
+                    Date.now(),
                     'verification',
                     {isActive: true, uvHash: 'slkdjlkjdffk'},
                     function () {
@@ -67,7 +67,7 @@ describe('database CRUD operations', () => {
                     emails.insertOne(
                         {
                             recipientAddress: 'test@test.com',
-                            time: new Date().getTime(),
+                            time: Date.now(),
                             type: 'verification',
                             verify: {isActive: true, uvHash: 'sldkjfaslkdffsjd'}
                         },
@@ -107,19 +107,19 @@ describe('database CRUD operations', () => {
                         [
                             {
                                 recipientAddress: 'him@test.com',
-                                time: new Date().getTime(),
+                                time: Date.now(),
                                 type: 'verification',
                                 verify: {isActive: true, uvHash: 'sldkjfaslkdffsjd'}
                             },
                             {
                                 recipientAddress: 'me@test.com',
-                                time: new Date().getTime(),
+                                time: Date.now(),
                                 type: 'verification',
                                 verify: {isActive: true, uvHash: 'sldkjfaslkdffsjd'}
                             },
                             {
                                 recipientAddress: 'you@test.com',
-                                time: new Date().getTime(),
+                                time: Date.now(),
                                 type: 'scheduled-alert',
                                 verify: {isActive: null, uvHash: null}
                             }

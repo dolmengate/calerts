@@ -3,6 +3,7 @@ const router = require('express').Router();
 const sendmail = require('../libs/sendmail');
 const databaseAccess = require('../dbaccess');
 const crypto = require('crypto');
+const User = require('../User');
 
 router.get('/', (req, res) => {
     res.render('signup');
@@ -23,8 +24,8 @@ router.post('/', (req, res) => {
             res.sendStatus(200);
             sendUserVerificationEmail(req.body.emailAddress);       // user does not exist
 
-            createPasswordHash(req.body.password, (salt, hash) => {
-                databaseAccess.createUser(req.body.emailAddress, salt, hash, (res) => {
+            createPasswordHash(req.body.password, (salt, hash) => { // create an unverified user
+                User.create(req.body.emailAddress, salt, hash, () => {
                     console.log('User ' + req.body.emailAddress + ' created');
                 });
             })
@@ -38,13 +39,16 @@ router.get('/confirm/:verificationHash', (req, res) => {
     // set user to verified and deactivate the verification email
     databaseAccess.findEmail({'verify.uvHash' : req.params.verificationHash, 'verify.isActive': true}, (email) => {
         if (email !== null) {
-            databaseAccess.updateUser({emailAddress: email.recipientAddress, isVerified: false}, {$set: {isVerified: true} }, (op) => {
-                databaseAccess.updateEmail({recipientAddress: email.recipientAddress, 'verify.isActive': true}, {$set: {'verify.isActive': false} }, (op) => {
-                    res.redirect('login', {
-                        message: 'User ' + email.recipientAddress + ' verified!'
-                    });
-                })
-            })
+            let user = new User(email.recipientAddress);
+            user.init(() => {
+                user.setVerified(true, () => {
+                    databaseAccess.updateEmail({recipientAddress: email.recipientAddress, 'verify.isActive': true}, {$set: {'verify.isActive': false} }, (op) => {
+                        res.render('login', {
+                            message: 'User ' + email.recipientAddress + ' verified!'
+                        });
+                    })
+                });
+            });
         } else {
             res.send('That user verification email has expired.')
         }

@@ -34,13 +34,20 @@ html
                 p You are logged in as
                     |
                     |
-                    span= user.emailAddress
+                    span= user
                 ul
                     each pair in settings.currencyPairs
-                        each setting in pair
-                            li= setting
+                        li= pair.name
+                            ul
+                                each time in pair.updateTimes
+                                    li
+                                        span= time.hour
+                                        |
+                                        span :
+                                        |
+                                        span= time.minute
 
-                button(id='session-test-btn') Do session thing
+                button(id='save-settings-btn') Do session thing
                 button(id='logout-btn') Logout
 
             else

@@ -57,7 +57,7 @@ if (document.getElementById('signup-btn') !== null) {
     };
 }
 
-document.getElementById('session-test-btn').onclick = function () {
+document.getElementById('save-settings-btn').onclick = function () {
     $.post( '/calerts/dashboard');
 };
 

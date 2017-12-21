@@ -20,10 +20,10 @@ exports.send = function (senderAddress, subject, recipientAddress, message, uvHa
     if (type === 'verification') {
         deactivateVerificationEmailsForUser(recipientAddress, (res) => {
             console.log('Existing verification emails for user ' + recipientAddress + ' set inactive');
-            databaseAccess.saveEmail(recipientAddress, new Date().getTime(), type, {isActive: true, uvHash: uvHash}, () => { console.log('Email saved')});
+            databaseAccess.saveEmail(recipientAddress, Date.now(), type, {isActive: true, uvHash: uvHash}, () => { console.log('Email saved')});
         });
     } else {
-        databaseAccess.saveEmail(recipientAddress, new Date().getTime(), type, {isActive: null, uvHash: null}, () => { console.log('Email saved')});
+        databaseAccess.saveEmail(recipientAddress, Date.now(), type, {isActive: null, uvHash: null}, () => { console.log('Email saved')});
     }
 
     // construct email content
