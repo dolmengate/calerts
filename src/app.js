@@ -1,11 +1,10 @@
 const www = require('./www.js');
 const SendMail = require('./libs/sendmail');
-const fs = require('fs');
-const path = require('path');
+const dbAccess = require('./dbaccess');
 const async = require('async');
 
 // TODO cache recent currency pair data
-// TODO refactor email updates to users from DB instead of extinct user.txt
+// TODO keep cache of update times to be updated only when a user adds or removes an update (to prevent having to query entire DB for updates each 5 minutes)
 
 run();
 
@@ -14,23 +13,37 @@ function run() {
     www.start();
     console.log('Server started');
 
-    // // email updates
+    // email updates
+    // check each minute if the current minutes are a multiple of 5
     // setInterval(() => {
-    //     fs.readFile(path.join(__dirname, 'emails', 'users.txt'), (err, usersData) => {
-    //         if (err) throw err;
-    //             async.each(usersData.toString().split('\n'), (user, next) => {
-    //                 if (user)   // don't do blank lines
-    //                     SendMail.send('calerts@sroman.info', 'calerts Price Update', user,
-    //                         'This is an automated message, please do not respond.' + '\n' + '\n' +
-    //                         'Bitcoin\n' + '\n' + '\n' +
-    //                         'Current Price: ' + currentPrice + '\n' +
-    //                         '200 Daily Moving Average: ' + twoHundredDayMovingAverage + '\n' +
-    //                         'Mayer Multiple: ' + mayerMultiple + '\n' + '\n' +
-    //                         'calerts', () => {
-    //                             console.log('Mail to ' + user + ' sent.');
-    //                         });
-    //                 next();
-    //         })
-    //     })
-    // }, 60000 * 60 * 12); // twelve hours
+    //     let now = new Date();
+    //     if (Math.floor((now.getTime() / 60000)) % 5 === 0) { // MAKE A USER HAVE AN UPDATE TIME THATS SOON THEN TEST
+    //         console.log('Checking user updates');
+    //         // find all users
+    //         dbAccess.findUsers(({}), (db, curs) => {
+    //             curs.forEach((user) => {
+    //                 async.each(user.settings.currencyPairs, (currencyPair, nextPair) => {
+    //                     async.each(currencyPair.updateTimes, (time, nextTime) => {
+    //                         if (now.getHours() === time.hour && now.getMinutes() === time.minute) {
+    //                             www.getTickerData(currencyPair.pair, (tdma, mm, cp) => {
+    //                                 SendMail.send('calerts@sroman.info', 'calerts Price Update', user.emailAddress,
+    //                                     'This is an automated message, please do not respond.' + '\n' + '\n' +
+    //                                     currencyPair.pair + '\n' + '\n' + '\n' +
+    //                                     'Current Price: ' + cp + '\n' +
+    //                                     '200 Daily Moving Average: ' + tdma + '\n' +
+    //                                     'Mayer Multiple: ' + mm + '\n' + '\n' +
+    //                                     'calerts', () => {
+    //                                         console.log('Update mail to ' + user.emailAddress + ' sent.');
+    //                                     });
+    //                             })
+    //                         }
+    //                         nextTime();
+    //                     });
+    //                     nextPair();
+    //                 })
+    //             });
+    //             db.close();
+    //         });
+    //     }
+    // }, 60000)
 }

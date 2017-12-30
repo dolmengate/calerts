@@ -8,12 +8,13 @@ html
     body
         div(class='container')
             h2 Login
-            form(class="form-inline" method='POST')
+            form(class="form-inline" method='POST' action='/api/login')
                 input(type="email" id='email' name ='email' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='email address')
                 input(type="password" id='password' name='password' required='required' class="form-control mb-2 mr-sm-2 mb-sm-0" placeholder='password')
                 button(id='login-btn' class="btn btn-primary") Login
             if message
                 p= message
+
         script(src='https://code.jquery.com/jquery-3.2.1.min.js'
         crossorigin='anonymous')
         script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js'

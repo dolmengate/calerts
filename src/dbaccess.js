@@ -12,6 +12,8 @@ const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
  * Fields:
  *  emailAddress: string
  *  password: string
+ *  alerts: array of objects
+ *  updates: array of objects
  *  settings: object
  *  isVerified: boolean
  */
@@ -25,25 +27,25 @@ exports.createUser = function(emailAddress, salt, hash, callback) {
                 emailAddress,
                 salt,
                 hash,
+                alerts: [
+                    {
+                        name: 'alertName',
+                        conditions: [
+                            'btcusd gt 14000.00'
+                        ]
+                    }
+                ],
+                updates: [
+                    {
+                        product: 'BTC-USD',
+                        time: {
+                            hour: 1,
+                            minutes: 0
+                        }
+                    }
+                ],
                 settings: {             // settings.currencyPairs.btcusd.updateTimes
                     theme: 'light',
-                    currencyPairs: {
-                        btcusd: {
-                            name: 'BTC-USD',
-                            updateTimes: [
-                                {
-                                    hour: 1,
-                                    minutes: 0
-                                }
-                            ]
-                        }
-                    },
-                    alerts: [
-                        {
-                            name: 'alertName',
-                            conditions: ''
-                        }
-                    ]
                 },
                 isVerified: false
             },

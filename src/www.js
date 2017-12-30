@@ -28,12 +28,12 @@ const wsserver = new WebSocket.Server( {server} );
 const dashboard = require('./routes/dashboard');
 const signup = require('./routes/signup');
 const login = require('./routes/login');
-const logout = require('./routes/logout');
+const api = require('./routes/api');
 
 exports.start = function () {
 
     // set static files serving
-    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join('..', 'public')));
 
     // setup view locations and interpretation
     app.set('views', path.join(__dirname, 'views'));
@@ -62,10 +62,10 @@ exports.start = function () {
     });
 
     /* Route mappings */
-    app.use('/calerts/dashboard', dashboard);
+    app.use('/calerts', dashboard);
     app.use('/calerts/signup', signup);
     app.use('/calerts/login', login);
-    app.use('/calerts/logout', logout);
+    app.use('/calerts/api', api);
 
     // catch and forward 404
     app.use((req, res, next) => {
@@ -79,7 +79,7 @@ exports.start = function () {
             console.log(msg);
         });
 
-        // socket update loop
+    //     socket update loop
         setInterval(() => {
             // prevent WebSocket from throwing 'not opened' error
             if (socket.readyState === WebSocket.OPEN) {

@@ -1,4 +1,4 @@
-let socket = new WebSocket('wss://localhost:3000');
+const socket = new WebSocket('wss://localhost:3000');
 
 // ensure all data is sent and close the socket before leaving the page
 window.onbeforeunload = () => {
@@ -7,28 +7,29 @@ window.onbeforeunload = () => {
     if (window.performance) { // check browser compatibility
         if (performance.navigation.type === 1)
             console.info("This page is reloaded");
-}
+    }
 
-    if (socket.readyState !== WebSocket.CLOSED && !socket.bufferedAmount)
+    if (socket.readyState !== WebSocket.CLOSED && !socket.bufferedAmount) {
         socket.close();
-    console.log('socket closed');
+        console.log('socket closed');
+    }
 };
 
 
 socket.onopen = () => {
     console.log('Socket open');
     socket.send('User connected.');
-    document.getElementById('socket-status').setAttribute('class', 'badge badge-success');
+    // document.getElementById('socket-status').setAttribute('class', 'badge badge-success');
 };
 
 socket.onerror = (err) => {
     console.log('There was an error with a socket connection ' + err);
-    document.getElementById('socket-status').setAttribute('class', 'badge badge-danger');
+    // document.getElementById('socket-status').setAttribute('class', 'badge badge-danger');
 };
 
 socket.onmessage = (e) => {
     console.log('Socket message received ' + e.data);
-    let data = JSON.parse(e.data);
+    const data = JSON.parse(e.data);
     document.getElementById('mayer-multiple').innerText = data.mayerMultiple;
     document.getElementById('200dma').innerText = data.twoHundredDayMovingAverage;
     document.getElementById('current-price').innerText = data.currentPrice;
@@ -57,10 +58,11 @@ if (document.getElementById('signup-btn') !== null) {
     };
 }
 
-document.getElementById('save-settings-btn').onclick = function () {
-    $.post( '/calerts/dashboard');
-};
-
-document.getElementById('logout-btn').onclick = function () {
-    $.post( '/calerts/logout');
-};
+// document.getElementById('save-settings-btn').onclick = function () {
+//     $.post( '/calerts/dashboard');
+// };
+//
+// document.getElementById('logout-btn').onclick = function () {
+//     $.post( '/calerts/logout');
+// };
+//

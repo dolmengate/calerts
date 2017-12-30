@@ -145,6 +145,7 @@ exports.getAvgPrice = function (prices) {
 /**
  * Returns a string of the 200 day moving average price for the given currency pair. Prices pulled from the Coinbase API.
  *
+ *
  * @param currencyPair: string: currencies to convert from and to of the format TCU-FCU
  * @param callback: function:
  * @returns number:             average of the prices of the given currency pair over the past 200 days including today

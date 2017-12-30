@@ -1,5 +1,7 @@
 const dbAccess = require('./dbaccess');
 
+// TODO promised based getters, setters, create and init funcs
+
 class User {
     constructor(emailAddress) {
         this.emailAddress = emailAddress;
@@ -12,44 +14,32 @@ class User {
     }
 }
 
-User.prototype.setUpdateTimes = function (currencyPair, values, callback) {
-    let cp = currencyPair.toLowerCase().split('-').join('');
-    dbAccess.updateUser({emailAddress: this.emailAddress}, {$set: { [`settings.currencyPairs.${cp}.updateTimes`]: values} }, (userDoc) => {
+User.prototype.setUpdates = function (values, callback) {
+    dbAccess.updateUser({emailAddress: this.emailAddress}, {$set: {updates: values} }, (updatedUserDoc) => {
         // reflect changes to DB doc in local User object
-        this.settings = userDoc.value.settings;
-        callback(userDoc);
+        this.alerts = updatedUserDoc.value.alerts;
+        this.updates = updatedUserDoc.value.updates;
+        callback(updatedUserDoc);
     })
 };
 
 User.prototype.setVerified = function (v, callback) {
-    dbAccess.updateUser({emailAddress: this.emailAddress}, {$set: {isVerified: v} }, (userDoc) => {
-        this.isVerified = userDoc.value.isVerified;
-        callback(userDoc);
+    dbAccess.updateUser({emailAddress: this.emailAddress}, {$set: {isVerified: v} }, (updatedUserDoc) => {
+        this.isVerified = updatedUserDoc.value.isVerified;
+        callback(updatedUserDoc);
     });
-};
-
-
-User.prototype.getCurrencyPairs = function () {
-    return this.settings.currencyPairs;
 };
 
 User.prototype.init = function (callback) {
     dbAccess.findUser({emailAddress: this.emailAddress}, (user) => {
         this.salt = user.salt;
         this.hash = user.hash;
-        this.settings = user.settings;
         this.alerts = user.alerts;
+        this.updates = user.updates;
+        this.settings = user.settings;
         this.isVerified = user.isVerified;
         callback();
     })
 };
-
-
-// let userObject = new User('help@me.com');
-// userObject.init(() => {
-//     userObject.setUpdateTimes('BTC-USD', [{hour: 2, minutes: 2}], (doc) => {
-//         console.log();
-//     })
-// });
 
 module.exports = User;
