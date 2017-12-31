@@ -6,7 +6,8 @@ function PostButton(props) {
     return (
         <button
             type="button"
-            className="btn btn-secondary"
+            className={props.styles}
+            tabIndex="0"
             onClick={
                 function () {
                     axios.post(`${props.action}`).catch((err) => {
@@ -15,7 +16,7 @@ function PostButton(props) {
                 }
             }
         >
-            {props.text}
+            {props.children}
         </button>
     );
 }

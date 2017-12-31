@@ -1,7 +1,7 @@
 import React from 'react';
 import TickerItem from "./TickerItem.jsx";
 
-class Ticker extends React.Component {
+export default class Ticker extends React.Component {
     constructor(props) {
         super(props);
 
@@ -47,12 +47,10 @@ class Ticker extends React.Component {
         socket.onopen = () => {
             console.log('Socket open');
             socket.send('User connected.');
-            document.getElementById('socket-status').setAttribute('class', 'badge badge-success');
         };
 
         socket.onerror = (err) => {
             console.log('There was an error with a socket connection ' + err);
-            document.getElementById('socket-status').setAttribute('class', 'badge badge-danger');
         };
 
         socket.onmessage = (e) => {
@@ -86,7 +84,6 @@ class Ticker extends React.Component {
 
         socket.onclose = (e) => {
             console.log('Socket closed');
-            document.getElementById('socket-status').setAttribute('class', 'badge badge-warning');
         };
     }
 
@@ -96,14 +93,12 @@ class Ticker extends React.Component {
 
     render() {
         return (
-            <div className="d-inline-block">
+            <div>
                     {this.state.tickerItems.map((item, i) => {
                         return <TickerItem key={i} symbol={item.product_id} price={item.lastPrice}/>;
                     })}
-                <span id='socket-status' className="badge badge-danger">Socket status</span>
+                <span className="ui red horizontal label">Socket status</span>
             </div>
         );
     }
 }
-
-export default Ticker;

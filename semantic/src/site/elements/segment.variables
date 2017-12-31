@@ -1,0 +1,20 @@
+/*******************************
+    User Variable Overrides
+*******************************/
+/*-------------------
+       Element
+--------------------*/
+
+@background: lighten(@pageBackground, 3);
+@borderWidth: 1px;
+@border: @borderWidth solid @borderColor;
+
+@boxShadow: @subtleShadow;
+@verticalPadding: 1em;
+@horizontalPadding: 1em;
+@padding: @verticalPadding @horizontalPadding;
+
+@verticalMargin: 1rem;
+@horizontalMargin: 0em;
+@margin: @verticalMargin @horizontalMargin;
+@borderRadius: @defaultBorderRadius;

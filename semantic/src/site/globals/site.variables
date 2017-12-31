@@ -1,0 +1,127 @@
+/*******************************
+     User Global Variables
+*******************************/
+
+/*-------------------
+    Brand Colors
+--------------------*/
+
+@primaryColor        : @green;
+@secondaryColor      : @black;
+
+@lightPrimaryColor   : @lightBlue;
+@lightSecondaryColor : @lightBlack;
+
+/*-------------------
+        Page
+--------------------*/
+
+@textColor           : @white;
+
+@pageBackground      : @darkBlue;
+@pageOverflowX       : hidden;
+
+@lineHeight          : 1.4285em;
+
+/*--------------
+   Form Input
+---------------*/
+
+/* This adjusts the default form input across all elements */
+@inputBackground        : @mediumBlue;
+
+/* Input Text Color */
+@inputColor: @textColor;
+@inputPlaceholderColor: lighten(@inputColor, 75);
+@inputPlaceholderFocusColor: lighten(@inputColor, 45);
+
+/*-------------------
+    Focused Input
+--------------------*/
+
+/* Used on dropdowns, other larger blocks */
+@focusedFormMutedBorderColor: #96C8DA;
+
+/*-------------------
+        Focus
+--------------------*/
+
+/*---  Colors  ---*/
+@primaryColorFocus    : saturate(darken(@primaryColor, 8), 20, relative);
+@secondaryColorFocus  : saturate(lighten(@secondaryColor, 8), 20, relative);
+
+/*-------------------
+        Active
+--------------------*/
+
+/*---  Colors  ---*/
+@primaryColorActive    : saturate(darken(@primaryColor, 5), 15, relative);
+@secondaryColorActive  : saturate(lighten(@secondaryColor, 5), 15, relative);
+
+/*-------------------
+      Borders
+--------------------*/
+
+@circularRadius                : 500rem;
+
+@borderColor               : rgba(34, 36, 38, 0.15);
+@strongBorderColor         : rgba(34, 36, 38, 0.22);
+@internalBorderColor       : rgba(34, 36, 38, 0.1);
+@selectedBorderColor       : rgba(34, 36, 38, 0.35);
+@strongSelectedBorderColor : rgba(34, 36, 38, 0.5);
+@disabledBorderColor       : rgba(34, 36, 38, 0.5);
+
+@solidInternalBorderColor  : #FAFAFA;
+@solidBorderColor          : #D4D4D5;
+@solidSelectedBorderColor  : #BCBDBD;
+
+@whiteBorderColor              : rgba(255, 255, 255, 0.1);
+@selectedWhiteBorderColor      : rgba(255, 255, 255, 0.8);
+
+@solidWhiteBorderColor         : #555555;
+@selectedSolidWhiteBorderColor : #999999;
+
+
+/*-------------------
+    Emotive Colors
+--------------------*/
+
+/* Positive */
+@positiveColor           : @mediumGreen;
+@positiveBackgroundColor : #2D402E;
+@positiveBorderColor     : #A3C293;
+@positiveHeaderColor     : #1A531B;
+@positiveTextColor       : #2C662D;
+
+/* Negative */
+@negativeColor           : @darkPink;
+@negativeBackgroundColor : #332424;
+@negativeBorderColor     : #E0B4B4;
+@negativeHeaderColor     : #912D2B;
+@negativeTextColor       : #9F3A38;
+
+/* Info */
+@infoColor              : #31CCEC;
+@infoBackgroundColor    : #F8FFFF;
+@infoBorderColor        : #A9D5DE;
+@infoHeaderColor        : #0E566C;
+@infoTextColor          : #276F86;
+
+/* Warning */
+@warningColor           : #E69281;
+@warningBorderColor     : #C9BA9B;
+@warningBackgroundColor : #33201D;
+@warningHeaderColor     : #794B02;
+@warningTextColor       : #573A08;
+
+/*--------------
+  Custom Colors
+---------------*/
+
+@darkBlue       : #14161A;
+@mediumBlue     : #282C34;
+@lightBlue      : #79B6F2;
+@lightPurple    : #C5A5C5;
+@lightGreen     : #89C882;
+@darkPink       : #9F3F37;
+@mediumGreen    : #649968;

@@ -34,6 +34,7 @@ exports.start = function () {
 
     // set static files serving
     app.use(express.static(path.join('..', 'public')));
+    app.use(express.static(path.join('..', 'semantic', 'dist')));
 
     // setup view locations and interpretation
     app.set('views', path.join(__dirname, 'views'));
@@ -74,27 +75,27 @@ exports.start = function () {
     });
 
     // while a user is connected update the page results
-    wsserver.on('connection', (socket, req) => {
-        socket.on('message', (msg) => {
-            console.log(msg);
-        });
+    // wsserver.on('connection', (socket, req) => {
+    //     socket.on('message', (msg) => {
+    //         console.log(msg);
+    //     });
 
     //     socket update loop
-        setInterval(() => {
+    //     setInterval(() => {
             // prevent WebSocket from throwing 'not opened' error
-            if (socket.readyState === WebSocket.OPEN) {
-                this.getTickerData('BTC-USD', (tdma, mm, cp) => {
-                    socket.send(
-                        JSON.stringify(
-                            {
-                                twoHundredDayMovingAverage: tdma.toFixed(2),
-                                mayerMultiple: mm.toFixed(1),
-                                currentPrice: cp.toFixed(2)
-                            }), (err) => { /* don't crash the server ffs */ })
-                })
-            }
-        }, 10000);  // ten seconds
-    });
+            // if (socket.readyState === WebSocket.OPEN) {
+                // this.getTickerData('BTC-USD', (tdma, mm, cp) => {
+                //     socket.send(
+                //         JSON.stringify(
+                //             {
+                //                 twoHundredDayMovingAverage: tdma.toFixed(2),
+                //                 mayerMultiple: mm.toFixed(1),
+                //                 currentPrice: cp.toFixed(2)
+                //             }), (err) => { /* don't crash the server ffs */ })
+                // })
+            // }
+        // }, 10000);  // ten seconds
+    // });
 
     server.listen(PORT);
     console.log('app listening on port: ' + PORT);

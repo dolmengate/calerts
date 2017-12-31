@@ -1,6 +1,6 @@
 import React from 'react';
 
-class Alerts extends React.Component {
+export default class Alerts extends React.Component {
 
     render() {
         return (        // TODO table instead of ol
@@ -19,5 +19,3 @@ class Alerts extends React.Component {
         );
     }
 }
-
-export default Alerts;
