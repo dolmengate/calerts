@@ -38,6 +38,7 @@ exports.createUser = function(emailAddress, salt, hash, callback) {
                 updates: [
                     {
                         product: 'BTC-USD',
+                        active: true,
                         time: {
                             hour: 1,
                             minutes: 0

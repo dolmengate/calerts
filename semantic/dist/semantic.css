@@ -7405,13 +7405,13 @@ a.ui.inverted.grey.header:hover {
 --------------------*/
 
 .ui.attached.header {
-  background: #FFFFFF;
+  background: #14161A;
   padding: 0.78571429rem 1rem;
   margin-left: -1px;
   margin-right: -1px;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border: 1px solid #D4D4D5;
+  border: 1px solid #282C34;
 }
 
 .ui.attached.block.header {
@@ -24079,7 +24079,7 @@ Floated Menu / Item
 
 .ui.table {
   width: 100%;
-  background: #FFFFFF;
+  background: #14161A;
   margin: 1em 0em;
   border: 1px solid rgba(34, 36, 38, 0.15);
   -webkit-box-shadow: none;
@@ -24120,7 +24120,7 @@ Floated Menu / Item
 
 .ui.table thead th {
   cursor: auto;
-  background: #F9FAFB;
+  background: #282C34;
   text-align: inherit;
   color: #FFFFFF;
   padding: 0.92857143em 0.78571429em;
@@ -24158,7 +24158,7 @@ Floated Menu / Item
 .ui.table tfoot th {
   cursor: auto;
   border-top: 1px solid rgba(34, 36, 38, 0.15);
-  background: #F9FAFB;
+  background: #14161A;
   text-align: inherit;
   color: #FFFFFF;
   padding: 0.78571429em 0.78571429em;
@@ -29712,7 +29712,7 @@ body.dimmable > .dimmer {
   min-width: max-content;
   margin: 0em;
   padding: 0em 0em;
-  background: #FFFFFF;
+  background: #14161A;
   font-size: 1em;
   text-shadow: none;
   text-align: left;

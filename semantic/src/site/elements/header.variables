@@ -126,10 +126,10 @@
 /* Attached */
 @attachedOffset: -1px;
 @attachedBoxShadow: none;
-@attachedBorder: 1px solid @solidBorderColor;
+@attachedBorder: 1px solid @mediumBlue;
 @attachedVerticalPadding: @blockVerticalPadding;
 @attachedHorizontalPadding: @blockHorizontalPadding;
-@attachedBackground: @white;
+@attachedBackground: @darkBlue;
 @attachedBorderRadius: @blockBorderRadius;
 
 @tinyAttachedSize: @relativeTiny;

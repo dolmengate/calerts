@@ -4,18 +4,25 @@ import Updates from "./Updates.jsx";
 
 export default class UserArea extends React.Component {
     render() {
-        return (
-            <div className="ui centered center aligned divided grid segment">
-                <div className="row">
-                    <h3 className="ui header">Dashboard</h3>
-                </div>
-                <div className="row">
-                    <h4 className="ui sub header">Alerts</h4>
-                    <Alerts items={this.props.user.alerts}/>
-                </div>
-                <div className="row">
-                    <h4 className="ui sub header">Updates</h4>
-                    <Updates items={this.props.user.updates}/>
+        return (// todo make 'dashboard' header look different than 'alerts' and 'updates' headers
+            <div className="ui grid container">
+                <h4 className="ui top attached header">Dashboard</h4>
+                <div className="ui grid container segment">
+                    <h3 className="ui header top attached">Alerts</h3>
+                    <div className="centered row segment">
+                        <Alerts items={this.props.user.alerts}/>
+                    </div>
+                    <h3 className="ui header top attached">Updates</h3>
+                    <div className="centered row segment">
+                        <Updates
+                            items={this.props.user.updates}
+                            onAddNewUpdateClick={this.props.onAddNewUpdateClick}
+                            onDeleteUpdateClick={this.props.onDeleteUpdateClick}
+                            onToggleUpdateActiveClick={this.props.onToggleUpdateActiveClick}
+                            onUpdateHourChange={this.props.onUpdateHourChange}
+                            onUpdateMinuteChange={this.props.onUpdateMinuteChange}
+                        />
+                    </div>
                 </div>
             </div>
         );

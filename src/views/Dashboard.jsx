@@ -19,17 +19,43 @@ export default class Dashboard extends React.Component {
         this.populateUser = this.populateUser.bind(this);
         this.getHeader = this.getHeader.bind(this);
         this.getContent = this.getContent.bind(this);
-        this.onSignUpClick = this.onSignUpClick.bind(this);
-        this.onLogInClick = this.onLogInClick.bind(this);
+        this.handleSignUpClick = this.handleSignUpClick.bind(this);
+        this.handleLogInClick = this.handleLogInClick.bind(this);
+        this.handleAddNewUpdateClick = this.handleAddNewUpdateClick.bind(this);
+        this.handleDeleteUpdateClick = this.handleDeleteUpdateClick.bind(this);
+        this.handleToggleUpdateActiveClick = this.handleToggleUpdateActiveClick.bind(this);
+        this.handleUpdateMinuteChange = this.handleUpdateMinuteChange.bind(this);
+        this.handleUpdateHourChange = this.handleUpdateHourChange.bind(this);
     }
 
-    onSignUpClick() {
+
+    handleAddNewUpdateClick() {
+        console.log('add new update')   // todo need to set and pass IDs
+    }
+
+    handleDeleteUpdateClick() {
+        console.log('delete update')
+    }
+
+    handleToggleUpdateActiveClick() {
+        console.log('toggle active')
+    }
+
+    handleUpdateMinuteChange() {
+        console.log('minute change')
+    }
+
+    handleUpdateHourChange() {
+        console.log('hour change')
+    }
+
+    handleSignUpClick() {
         const state = this.state;
         state.content = 'signup';
         this.setState(state);
     }
 
-    onLogInClick() {
+    handleLogInClick() {
         const state = this.state;
         state.content = 'login';
         this.setState(state);
@@ -40,15 +66,22 @@ export default class Dashboard extends React.Component {
             switch (this.state.content) {
                 case 'login':
                     return <GridSegment>
-                        <Login onSignUpClick={this.onSignUpClick}/>
+                        <Login onSignUpClick={this.handleSignUpClick}/>
                     </GridSegment>;
                 case 'signup':
                     return <GridSegment>
-                        <SignUp onLogInClick={this.onLogInClick}/>
+                        <SignUp onLogInClick={this.handleLogInClick}/>
                     </GridSegment>;
             }
         }
-        return <UserArea user={this.state.user}/>;
+        return <UserArea
+            user={this.state.user}
+            onAddNewUpdateClick={this.handleAddNewUpdateClick}
+            onDeleteUpdateClick={this.handleDeleteUpdateClick}
+            onToggleUpdateActiveClick={this.handleToggleUpdateActiveClick}
+            onUpdateHourChange={this.handleUpdateHourChange}
+            onUpdateMinuteChange={this.handleUpdateMinuteChange}
+        />;
     }
 
     getHeader() {
