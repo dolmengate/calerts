@@ -11,8 +11,16 @@ export default class Dashboard extends React.Component {
         super(props);
 
         this.state = {
-            user: null,
-            content: 'login'
+            user: {
+                email: null,
+                settings: {},
+                alerts: [],
+                updates: []
+            },
+            content: 'login',
+            hasPendingAlertsChanges: false,
+            hasPendingUpdatesChanges: false,
+            hasPendingSettingsChanges: false
         };
 
         this.componentWillMount = this.componentWillMount.bind(this);
@@ -26,27 +34,86 @@ export default class Dashboard extends React.Component {
         this.handleToggleUpdateActiveClick = this.handleToggleUpdateActiveClick.bind(this);
         this.handleUpdateMinuteChange = this.handleUpdateMinuteChange.bind(this);
         this.handleUpdateHourChange = this.handleUpdateHourChange.bind(this);
+        this.handleUpdateProductChange = this.handleUpdateProductChange.bind(this);
+        this.handleSaveUpdatesClick = this.handleSaveUpdatesClick.bind(this);
     }
-
 
     handleAddNewUpdateClick() {
-        console.log('add new update')   // todo need to set and pass IDs
+        const state = this.state;
+        state.user.updates.push(
+            {
+                id: new Date().getTime(),   // unix time is a convenient id, no specific relevance here
+                active: true,
+                product: '',
+                name: '',
+                description: '',
+                time: { hour: 0, minutes: 0}
+            }
+        );
+
+        state.hasPendingUpdatesChanges = true;
+        this.setState(state);
     }
 
-    handleDeleteUpdateClick() {
-        console.log('delete update')
+    handleDeleteUpdateClick(selected) {
+        const state = this.state;
+        state.user.updates = state.user.updates.filter((update) => update.id !== selected.id );
+
+        state.hasPendingUpdatesChanges = true;
+        this.setState(state);
     }
 
-    handleToggleUpdateActiveClick() {
-        console.log('toggle active')
+    handleToggleUpdateActiveClick(selected) {
+        const state = this.state;
+        state.user.updates.forEach((update) => {
+            if (update.id === selected.id)
+                update.active = !update.active;
+        });
+
+        state.hasPendingUpdatesChanges = true;
+        this.setState(state);
     }
 
-    handleUpdateMinuteChange() {
-        console.log('minute change')
+    handleUpdateMinuteChange(event, selected) {
+        const state = this.state;
+        state.user.updates.forEach((update) => {
+            if (update.id === selected.id) {
+                update.time.minutes = event.target.value
+            }
+        });
+
+        state.hasPendingUpdatesChanges = true;
+        this.setState(state);
     }
 
-    handleUpdateHourChange() {
-        console.log('hour change')
+    handleUpdateHourChange(event, selected) {
+        const state = this.state;
+        state.user.updates.forEach((update) => {
+            if (update.id === selected.id)
+                update.time.hour = event.target.value
+        });
+
+        state.hasPendingUpdatesChanges = true;
+        this.setState(state);
+    }
+
+    handleUpdateProductChange(event, selected) {
+        const state = this.state;
+        state.user.updates.forEach((update) => {
+            if (update.id === selected.id)
+                update.product = event.target.value
+        });
+
+        state.hasPendingUpdatesChanges = true;
+        this.setState(state);
+    }
+
+    handleSaveUpdatesClick() {
+        console.log('updates changes saved');
+        // save changes to db
+        const state = this.state;
+        state.hasPendingUpdatesChanges = false;
+        this.setState(state);
     }
 
     handleSignUpClick() {
@@ -62,7 +129,7 @@ export default class Dashboard extends React.Component {
     }
 
     getContent() {
-        if (this.state.user === null) {
+        if (this.state.user.email === null) {
             switch (this.state.content) {
                 case 'login':
                     return <GridSegment>
@@ -76,11 +143,16 @@ export default class Dashboard extends React.Component {
         }
         return <UserArea
             user={this.state.user}
+            hasPendingUpdatesChanges={this.state.hasPendingUpdatesChanges}
+            hasPendingAlertsChanges={this.state.hasPendingAlertsChanges}
+            hasPendingSettingsChanges={this.state.hasPendingSettingsChanges}
+            onSaveUpdatesClick={this.handleSaveUpdatesClick}
             onAddNewUpdateClick={this.handleAddNewUpdateClick}
             onDeleteUpdateClick={this.handleDeleteUpdateClick}
             onToggleUpdateActiveClick={this.handleToggleUpdateActiveClick}
             onUpdateHourChange={this.handleUpdateHourChange}
             onUpdateMinuteChange={this.handleUpdateMinuteChange}
+            onUpdateProductChange={this.handleUpdateProductChange}
         />;
     }
 

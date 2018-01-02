@@ -10,17 +10,23 @@ export default class UserArea extends React.Component {
                 <div className="ui grid container segment">
                     <h3 className="ui header top attached">Alerts</h3>
                     <div className="centered row segment">
-                        <Alerts items={this.props.user.alerts}/>
+                        <Alerts
+                            items={this.props.user.alerts}
+                            hasPendingChanges={this.props.hasPendingAlertsChanges}
+                        />
                     </div>
                     <h3 className="ui header top attached">Updates</h3>
                     <div className="centered row segment">
                         <Updates
                             items={this.props.user.updates}
+                            hasPendingChanges={this.props.hasPendingUpdatesChanges}
+                            onSaveUpdatesClick={this.props.onSaveUpdatesClick}
                             onAddNewUpdateClick={this.props.onAddNewUpdateClick}
                             onDeleteUpdateClick={this.props.onDeleteUpdateClick}
                             onToggleUpdateActiveClick={this.props.onToggleUpdateActiveClick}
                             onUpdateHourChange={this.props.onUpdateHourChange}
                             onUpdateMinuteChange={this.props.onUpdateMinuteChange}
+                            onUpdateProductChange={this.props.onUpdateProductChange}
                         />
                     </div>
                 </div>

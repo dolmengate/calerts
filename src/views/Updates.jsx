@@ -1,31 +1,49 @@
 import React from 'react';
 
 export default class Updates extends React.Component {
-    constructor(props) {
-        super(props);
-
-    }
-
     render() {
         return (
             <table className="ui celled table">
                 <thead>
                     <tr>
+                        <th className="one wide"></th>
                         <th className="one wide">Product</th>
-                        <th>Hour</th>
-                        <th>Minutes</th>
-                        <th>Activate/Delete</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th className="center aligned">Hour</th>
+                        <th className="center aligned">Minutes</th>
+                        <th className="center aligned">Activate/Delete</th>
                     </tr>
                 </thead>
                 <tbody>
                     {this.props.items.map((update) => {
-                        return <tr key={update}>
-                            <td>{update.product}</td>
+                        return <tr key={JSON.stringify(update)}>
+                            <td>
+                                <img
+                                    className="ui circular image"
+                                    src={ (update.product) ? `images/${update.product.slice(0, 3).toLowerCase()}icon.png` : '' }
+                                />
+                            </td>
+                            <td className="center aligned">
+                                <select
+                                    className="ui dropdown button"
+                                    defaultValue={update.product}
+                                    onChange={(event) => {this.props.onUpdateProductChange(event, update)} }
+                                >
+                                    <option value="">Product</option>
+                                    <option value="BTC-USD">BTC-USD</option>
+                                    <option value="BCH-USD">BCH-USD</option>
+                                    <option value="LTC-USD">LTC-USD</option>
+                                    <option value="ETH-USD">ETH-USD</option>
+                                </select>
+                            </td>
+                            <td>User-defined name for this update</td>
+                            <td>Even longer user-defined description please goes here tyvm</td>
                             <td>
                                 <select
-                                    className="ui dropdown"
+                                    className="ui dropdown button"
                                     defaultValue={update.time.hour}
-                                    onChange={this.props.onUpdateHourChange}
+                                    onChange={(event) => {this.props.onUpdateHourChange(event, update)} }
                                 >
                                     <option value="0">00</option>
                                     <option value="1">01</option>
@@ -55,9 +73,9 @@ export default class Updates extends React.Component {
                             </td>
                             <td>
                                 <select
-                                    className="ui dropdown"
+                                    className="ui dropdown button"
                                     defaultValue={update.time.minutes}
-                                    onChange={this.props.onUpdateMinuteChange}
+                                    onChange={(event) => {this.props.onUpdateMinuteChange(event, update)} }
                                 >
                                     <option value="0">00</option>
                                     <option value="5">05</option>
@@ -76,12 +94,12 @@ export default class Updates extends React.Component {
                             <td>
                                 <div className="ui buttons">
                                     <button
-                                        className={`ui tiny toggle button ${update.active ? 'active' : ''}`}
-                                        onClick={this.props.onToggleUpdateActiveClick}
+                                        className={`ui mini toggle button ${update.active ? 'active' : ''}`}
+                                        onClick={() => {this.props.onToggleUpdateActiveClick(update)}}
                                     >
                                         {update.active ? 'Active' : 'Inactive'}
                                     </button>
-                                    <button onClick={this.props.onDeleteUpdateClick} className="negative ui button">
+                                    <button onClick={() => { this.props.onDeleteUpdateClick(update) }} className="negative ui button">
                                         <i className="remove icon"/>
                                         Delete
                                     </button>
@@ -92,10 +110,20 @@ export default class Updates extends React.Component {
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colSpan="4" className="right aligned">
-                            <button onClick={this.props.onAddNewUpdateClick} className="ui tiny labeled icon button">
+                        <td colSpan="7" className="right aligned">
+                            <button
+                                onClick={this.props.onAddNewUpdateClick}
+                                className="ui mini labeled icon button"
+                            >
                                 Add new
                                 <i className="large add square icon"/>
+                            </button>
+                            <button
+                                onClick={this.props.onSaveUpdatesClick}
+                                className={`ui mini primary ${this.props.hasPendingChanges ? '' : 'disabled'} labeled icon button`}
+                            >
+                                Save
+                                <i className="large save icon"/>
                             </button>
                         </td>
                     </tr>
