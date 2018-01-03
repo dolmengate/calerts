@@ -3,37 +3,27 @@ const dbAccess = require('../dbaccess');
 const crypto = require('crypto');
 const User = require('../User');
 const sendmail = require('../libs/sendmail');
+const dashboard = require('./dashboard');
 
-// TODO add endpoints for api.js
+router.use('/dashboard', dashboard);
 
 router.post('/login', (req, res) => {
-    dbAccess.findUser({emailAddress: req.body.email, isVerified: true}, (user) => {
-        if (user !== null) {    // user exists
-            createPasswordAttemptHash(req.body.password, user.salt.buffer, (attemptHash) => {
-                if (Buffer.compare(attemptHash, user.hash.buffer) === 0) {  // password matched
+    User.find(req.body.email, (err, user) => {
+        if (err)  {
+            res.sendStatus(401);
+        } else {    // user exists
+            user.attemptLogin(req.body.password, (err, matches) => {
+                if (err) {
+                    res.sendStatus(401);
+                } else if (matches) {
                     req.session.regenerate((err) => {
-                        if (err) throw err;
                         req.session.user = user;    // this duplicates the users entire account data on the session :(
                         res.sendStatus(200);
-                    });
-                } else {
-                    res.sendStatus(401);
+                    })
                 }
-            })
-        } else {
-          res.sendStatus(401);
+            });
         }
     })
-});
-
-/* STUB */
-router.post('/dashboard', (req, res) => {
-    if (req.session.user !== undefined) {
-        // do logged-in-required-thing here
-        res.sendStatus(200);
-    } else {
-        res.sendStatus(401);
-    }
 });
 
 router.post('/signup', (req, res) => {
@@ -71,7 +61,7 @@ router.post('/logout', (req, res) => {
 });
 
 router.post('/session', (req, res) => {
-    if (req.session.user !== undefined) {
+    if (req.session.user !== undefined && req.session.user !== null) {
         res.send({
             email: req.session.user.emailAddress,
             alerts: req.session.user.alerts,
@@ -83,16 +73,6 @@ router.post('/session', (req, res) => {
     }
 });
 
-
-/**
- *  Create a hash from the user's password entry value and stored salt.
- *
- */
-createPasswordAttemptHash = function (enteredPassword, salt, callback) {
-    crypto.pbkdf2(enteredPassword, salt, 100000, 64, 'sha512', (err, attemptHash) => {
-        callback(attemptHash);
-    })
-};
 
 /**
  * Send an email to the user to verify their account.

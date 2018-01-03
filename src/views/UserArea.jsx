@@ -27,6 +27,8 @@ export default class UserArea extends React.Component {
                             onUpdateHourChange={this.props.onUpdateHourChange}
                             onUpdateMinuteChange={this.props.onUpdateMinuteChange}
                             onUpdateProductChange={this.props.onUpdateProductChange}
+                            onUpdateNameChange={this.props.onUpdateNameChange}
+                            onUpdateDescriptionChange={this.props.onUpdateDescriptionChange}
                         />
                     </div>
                 </div>

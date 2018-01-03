@@ -17,7 +17,7 @@ export default class Updates extends React.Component {
                 </thead>
                 <tbody>
                     {this.props.items.map((update) => {
-                        return <tr key={JSON.stringify(update)}>
+                        return <tr key={update.id}>
                             <td>
                                 <img
                                     className="ui circular image"
@@ -37,8 +37,22 @@ export default class Updates extends React.Component {
                                     <option value="ETH-USD">ETH-USD</option>
                                 </select>
                             </td>
-                            <td>User-defined name for this update</td>
-                            <td>Even longer user-defined description please goes here tyvm</td>
+                            <td>
+                                <input
+                                    type="text"
+                                    placeholder="Update name"
+                                    defaultValue={update.name}
+                                    onChange={(event) => {this.props.onUpdateNameChange(event, update)} }
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    type="text"
+                                    placeholder="Update description"
+                                    defaultValue={update.description}
+                                    onChange={(event) => {this.props.onUpdateDescriptionChange(event, update)} }
+                                />
+                            </td>
                             <td>
                                 <select
                                     className="ui dropdown button"

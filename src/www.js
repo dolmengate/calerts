@@ -25,7 +25,7 @@ const WebSocket = require('ws');
 const wsserver = new WebSocket.Server( {server} );
 
 /* express routes */
-const dashboard = require('./routes/dashboard');
+const dashboard = require('./routes/index');
 const signup = require('./routes/signup');
 const login = require('./routes/login');
 const api = require('./routes/api');
