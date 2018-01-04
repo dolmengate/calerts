@@ -26,7 +26,7 @@ export default class Updates extends React.Component {
                             </td>
                             <td className="center aligned">
                                 <select
-                                    className="ui dropdown button"
+                                    className="ui compact selection dropdown"
                                     defaultValue={update.product}
                                     onChange={(event) => {this.props.onUpdateProductChange(event, update)} }
                                 >
@@ -38,24 +38,28 @@ export default class Updates extends React.Component {
                                 </select>
                             </td>
                             <td>
-                                <input
-                                    type="text"
-                                    placeholder="Update name"
-                                    defaultValue={update.name}
-                                    onChange={(event) => {this.props.onUpdateNameChange(event, update)} }
-                                />
+                                <div className="ui input">
+                                    <input
+                                        type="text"
+                                        placeholder="Update name"
+                                        defaultValue={update.name}
+                                        onChange={(event) => {this.props.onUpdateNameChange(event, update)} }
+                                    />
+                                </div>
                             </td>
                             <td>
-                                <input
-                                    type="text"
-                                    placeholder="Update description"
-                                    defaultValue={update.description}
-                                    onChange={(event) => {this.props.onUpdateDescriptionChange(event, update)} }
-                                />
+                                <div className="ui input">
+                                    <input
+                                        type="text"
+                                        placeholder="Update description"
+                                        defaultValue={update.description}
+                                        onChange={(event) => {this.props.onUpdateDescriptionChange(event, update)} }
+                                    />
+                                </div>
                             </td>
                             <td>
                                 <select
-                                    className="ui dropdown button"
+                                    className="ui compact selection dropdown"
                                     defaultValue={update.time.hour}
                                     onChange={(event) => {this.props.onUpdateHourChange(event, update)} }
                                 >
@@ -87,7 +91,7 @@ export default class Updates extends React.Component {
                             </td>
                             <td>
                                 <select
-                                    className="ui dropdown button"
+                                    className="ui compact selection dropdown"
                                     defaultValue={update.time.minutes}
                                     onChange={(event) => {this.props.onUpdateMinuteChange(event, update)} }
                                 >

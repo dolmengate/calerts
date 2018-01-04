@@ -6,8 +6,8 @@
     Brand Colors
 --------------------*/
 
-@primaryColor        : @green;
-@secondaryColor      : @black;
+@primaryColor        : @lightGreen;
+@secondaryColor      : @lightPurple;
 
 @lightPrimaryColor   : @lightBlue;
 @lightSecondaryColor : @lightBlack;
@@ -22,6 +22,25 @@
 @pageOverflowX       : hidden;
 
 @lineHeight          : 1.4285em;
+
+/*-------------------
+       Links
+--------------------*/
+
+@linkColor           : #4183C4;
+@linkUnderline       : none;
+@linkHoverColor      : darken(saturate(@linkColor, 20), 15, relative);
+@linkHoverUnderline  : @linkUnderline;
+
+/*-------------------
+  Highlighted Text
+--------------------*/
+
+@highlightBackground      : #CCE2FF;
+@highlightColor           : @textColor;
+
+@inputHighlightBackground : rgba(100, 100, 100, 0.4);
+@inputHighlightColor      : @textColor;
 
 /*--------------
    Form Input

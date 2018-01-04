@@ -29,10 +29,27 @@ exports.createUser = function(emailAddress, salt, hash, callback) {
                 hash,
                 alerts: [
                     {
+                        id: new Date().getTime(),
                         name: 'alertName',
+                        active: true,
                         conditions: [
-                            'btcusd gt 14000.00'
-                        ]
+                            {
+                                symbols: [
+                                    {
+                                        type: 'product',  // types: product, comparison, logical, time, number
+                                        value: 'btcusd'
+                                    },
+                                    {
+                                        type: 'comparison',
+                                        value: 'gt'
+                                    },
+                                    {
+                                        type: 'number',
+                                        value: '14000'
+                                    },
+                                ],
+                            }
+                        ],
                     }
                 ],
                 updates: [

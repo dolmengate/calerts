@@ -2,7 +2,7 @@ const apis = require('./apis');
 const async = require('async');
 
 // todo add time conditions
-// 'in 15 minutes'
+// 'within 15 minutes'
 // '15 minutes from now'
 
 const symbols = {
@@ -17,7 +17,7 @@ const symbols = {
         gte: '>=',
         lt: '<',
         gt: '>',
-        eq: '=',
+        eq: '==',
         in: 'in'
     },
     logical: {

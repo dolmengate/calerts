@@ -17,7 +17,7 @@ export default class Header extends React.Component {
                         <span>{this.props.userEmail}</span>
                     </div>
                     <div className="column">
-                        <PostButton styles="mini ui secondary button" action="/calerts/api/logout">
+                        <PostButton styles="mini ui negative button" action="/calerts/api/logout">
                             <i className="sign out icon"/> Logout
                         </PostButton>
                     </div>
