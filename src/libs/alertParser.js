@@ -17,13 +17,7 @@ const symbols = {
         gte: '>=',
         lt: '<',
         gt: '>',
-        eq: '==',
         in: 'in'
-    },
-    logical: {
-        and: '&&',
-        or: '||',
-        not: '!'
     },
     time: {
         at: '@',

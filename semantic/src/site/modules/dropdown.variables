@@ -72,7 +72,7 @@
 @subMenuZIndex: 21;
 
 /* Menu Header */
-@menuHeaderColor: @darkTextColor;
+@menuHeaderColor: @textColor;
 @menuHeaderFontSize: @relative11px;
 @menuHeaderFontWeight: bold;
 @menuHeaderTextTransform: uppercase;

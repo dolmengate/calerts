@@ -8,10 +8,12 @@ export default class SymbolInput extends React.Component {
 
     createInputForType(symbol) {
         switch (symbol.type) {
-            case 'products':
+            case 'product':
                 return <select
-                    className="ui dropdown button"
+                    style={{padding: '5px'}}
+                    className="ui compact selection dropdown"
                     defaultValue={symbol.value}
+                    onChange={event => this.props.onChange(event, this.props.alertId, this.props.conditionId, this.props.id)}
                 >
                     <option value='btcusd'>BTC-USD</option>
                     <option value='ltcusd'>LTC-USD</option>
@@ -20,21 +22,24 @@ export default class SymbolInput extends React.Component {
                 </select>;
             case 'comparison':
                 return <select
-                    className="ui dropdown button"
+                    style={{padding: '5px'}}
+                    className="ui compact selection dropdown"
                     defaultValue={symbol.value}
+                    onChange={event => this.props.onChange(event, this.props.alertId, this.props.conditionId, this.props.id)}
                 >
                     <option value='lte'>&lt;=</option>
                     <option value='gte'>&gt;=</option>
                     <option value='lt'>&lt;</option>
                     <option value='gt'>&gt;</option>
-                    <option value='eq'>=</option>
                 </select>;
             case 'number':
                 return <div className="ui input">
                     <input
+                        style={{width: '5em'}}
                         type="text"
                         defaultValue={symbol.value}
                         placeholder="number"
+                        onChange={event => this.props.onChange(event, this.props.alertId, this.props.conditionId, this.props.id)}
                     />
                 </div>;
         }

@@ -1,4 +1,5 @@
 import React from 'react';
+import SaveButton from "./SaveButton.jsx";
 
 export default class Updates extends React.Component {
     render() {
@@ -136,13 +137,7 @@ export default class Updates extends React.Component {
                                 Add new
                                 <i className="large add square icon"/>
                             </button>
-                            <button
-                                onClick={this.props.onSaveUpdatesClick}
-                                className={`ui mini primary ${this.props.hasPendingChanges ? '' : 'disabled'} labeled icon button`}
-                            >
-                                Save
-                                <i className="large save icon"/>
-                            </button>
+                            <SaveButton onClick={this.props.onSaveUpdatesClick} active={this.props.hasPendingChanges}/>
                         </td>
                     </tr>
                 </tfoot>

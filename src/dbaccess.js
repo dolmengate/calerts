@@ -1,5 +1,6 @@
 let MongoClient = require('mongodb').MongoClient;
 let assert = require('assert');
+const crypto = require('crypto');
 
 // Connection url
 const DB_URL = 'mongodb://localhost:27017/test';        // USING TEST URL
@@ -29,7 +30,6 @@ exports.createUser = function(emailAddress, salt, hash, callback) {
                 hash,
                 alerts: [
                     {
-                        id: new Date().getTime(),
                         name: 'alertName',
                         active: true,
                         conditions: [

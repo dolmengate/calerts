@@ -15,6 +15,10 @@ export default class UserArea extends React.Component {
                         <Alerts
                             items={this.props.user.alerts}
                             hasPendingChanges={this.props.hasPendingAlertsChanges}
+                            onSaveAlertsClick={this.props.onSaveAlertsClick}
+                            onConditionSymbolChange={this.props.onConditionSymbolChange}
+                            onAddNewSymbolClick={this.props.onAddNewSymbolClick}
+                            onAddNewConditionClick={this.props.onAddNewConditionClick}
                         />
                     </div>
                     <h3 className="ui header top attached">Updates</h3>

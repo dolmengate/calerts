@@ -41,26 +41,155 @@ export default class Dashboard extends React.Component {
         this.handleAddNewUpdateClick = this.handleAddNewUpdateClick.bind(this);
         this.handleDeleteUpdateClick = this.handleDeleteUpdateClick.bind(this);
         this.handleToggleUpdateActiveClick = this.handleToggleUpdateActiveClick.bind(this);
+
+        // --- Alert creation, fields change & button click handlers
+        this.handleConditionSymbolChange = this.handleConditionSymbolChange.bind(this);
+        this.handleAddNewConditionSymbolClick = this.handleAddNewConditionSymbolClick.bind(this);
+        this.handleAddNewAlertConditionClick = this.handleAddNewAlertConditionClick.bind(this);
+        this.handleSaveAlertsClick = this.handleSaveAlertsClick.bind(this);
+    }
+
+    getContent() {
+        if (this.state.user.email === null) {
+            switch (this.state.content) {
+                case 'login':
+                    return <GridSegment>
+                        <Login onSignUpClick={this.handleSignUpClick}/>
+                    </GridSegment>;
+                case 'signup':
+                    return <GridSegment>
+                        <SignUp onLogInClick={this.handleLogInClick}/>
+                    </GridSegment>;
+            }
+        }
+        return <UserArea
+            user={this.state.user}
+            hasPendingUpdatesChanges={this.state.hasPendingUpdatesChanges}
+            hasPendingAlertsChanges={this.state.hasPendingAlertsChanges}
+            hasPendingSettingsChanges={this.state.hasPendingSettingsChanges}
+            
+            onSaveUpdatesClick={this.handleSaveUpdatesClick}
+            onAddNewUpdateClick={this.handleAddNewUpdateClick}
+            onDeleteUpdateClick={this.handleDeleteUpdateClick}
+            onToggleUpdateActiveClick={this.handleToggleUpdateActiveClick}
+            onUpdateHourChange={this.handleUpdateHourChange}
+            onUpdateMinuteChange={this.handleUpdateMinuteChange}
+            onUpdateProductChange={this.handleUpdateProductChange}
+            onUpdateNameChange={this.handleUpdateNameChange}
+            onUpdateDescriptionChange={this.handleUpdateDescriptionChange}
+
+            onSaveAlertsClick={this.handleSaveAlertsClick}
+            onConditionSymbolChange={this.handleConditionSymbolChange}
+            onAddNewSymbolClick={this.handleAddNewConditionSymbolClick}
+            onAddNewConditionClick={this.handleAddNewAlertConditionClick}
+        />;
+    }
+
+    getHeader() {
+        if (this.state.user === null) {
+            return <Header/>;
+        }
+        return <Header userEmail={this.state.user.email}/>;
+    }
+
+    populateUser() {
+        axios.post('/calerts/api/session').then((res) => {
+            const state = this.state;
+            state.user = {
+                email: res.data.email,
+                alerts: res.data.alerts,
+                updates: res.data.updates,
+                settings: res.data.settings
+            };
+            this.setState(state);
+        }).catch((err) => {
+            console.log('Session GET error: ' + err);
+        })
+    }
+
+    componentWillMount() {
+        this.populateUser();
+    }
+
+    render() {
+        return (
+            <div>
+                {this.getHeader()}
+                {this.getContent()}
+            </div>
+        );
+    }
+
+    handleSaveAlertsClick() {
+        const state = this.state;
+        console.log('conditions saved');
+        state.hasPendingAlertsChanges = false;
+        this.setState(state);
+    }
+
+    // The id for an alert/condition/symbol is the same as its index in the array
+    handleConditionSymbolChange(event, alertIdIndex, conditionIdIndex, symbolIdIndex) {
+        const state = this.state;
+        state.user.alerts[alertIdIndex].conditions[conditionIdIndex].symbols[symbolIdIndex].value = event.target.value;
+        state.hasPendingAlertsChanges = true;
+        this.setState(state);
+    }
+
+    handleAddNewConditionSymbolClick(alertIdIndex, conditionIdIndex, type) {
+        const state = this.state;
+        switch (type) {
+            case 'product':
+                state.user.alerts[alertIdIndex].conditions[conditionIdIndex].symbols.push( {type: type, value: 'btcusd'} );
+                break;
+            case 'comparison':
+                state.user.alerts[alertIdIndex].conditions[conditionIdIndex].symbols.push( {type: type, value: 'lt'} );
+                break;
+            case 'number':
+                state.user.alerts[alertIdIndex].conditions[conditionIdIndex].symbols.push( {type: type, value: 0} );
+                break;
+        }
+        state.hasPendingAlertsChanges = true;
+        this.setState(state);
+    }
+
+    handleAddNewAlertConditionClick(alertIndex) {
+        const state = this.state;
+        state.user.alerts[alertIndex].conditions.push( {symbols: [{type: 'product', value: 'btcusd'}]} );
+        state.hasPendingAlertsChanges = true;
+        this.setState(state);
     }
 
     handleUpdateNameChange(event, selected) {
         const state = this.state;
-        state.user.updates.forEach((update) => {
-            if (update.id === selected.id) {
-                update.name = event.target.value
-            }
-        });
+        state.user.updates.filter(update => update.id === selected.id )[0].name = event.target.value;
         state.hasPendingUpdatesChanges = true;
         this.setState(state);
     }
 
     handleUpdateDescriptionChange(event, selected) {
         const state = this.state;
-        state.user.updates.forEach((update) => {
-            if (update.id === selected.id) {
-                update.description = event.target.value
-            }
-        });
+        state.user.updates.filter(update => update.id === selected.id )[0].description = event.target.value;
+        state.hasPendingUpdatesChanges = true;
+        this.setState(state);
+    }
+
+    handleUpdateMinuteChange(event, selected) {
+        const state = this.state;
+        state.user.updates.filter(update => update.id === selected.id )[0].time.minutes = event.target.value;
+        state.hasPendingUpdatesChanges = true;
+        this.setState(state);
+    }
+
+    handleUpdateHourChange(event, selected) {
+        const state = this.state;
+        state.user.updates.filter(update => update.id === selected.id )[0].time.hour = event.target.value;
+        state.hasPendingUpdatesChanges = true;
+        this.setState(state);
+    }
+
+    handleUpdateProductChange(event, selected) {
+        const state = this.state;
+        state.user.updates.filter(update => update.id === selected.id )[0].product = event.target.value;
         state.hasPendingUpdatesChanges = true;
         this.setState(state);
     }
@@ -100,41 +229,6 @@ export default class Dashboard extends React.Component {
         state.hasPendingUpdatesChanges = true;
         this.setState(state);
     }
-
-    handleUpdateMinuteChange(event, selected) {
-        const state = this.state;
-        state.user.updates.forEach((update) => {
-            if (update.id === selected.id) {
-                update.time.minutes = event.target.value
-            }
-        });
-
-        state.hasPendingUpdatesChanges = true;
-        this.setState(state);
-    }
-
-    handleUpdateHourChange(event, selected) {
-        const state = this.state;
-        state.user.updates.forEach((update) => {
-            if (update.id === selected.id)
-                update.time.hour = event.target.value
-        });
-
-        state.hasPendingUpdatesChanges = true;
-        this.setState(state);
-    }
-
-    handleUpdateProductChange(event, selected) {
-        const state = this.state;
-        state.user.updates.forEach((update) => {
-            if (update.id === selected.id)
-                update.product = event.target.value
-        });
-
-        state.hasPendingUpdatesChanges = true;
-        this.setState(state);
-    }
-
     handleSaveUpdatesClick() {
         console.log('updates changes saved');
         axios.post('calerts/api/dashboard/updates/save', this.state.user.updates)
@@ -158,68 +252,4 @@ export default class Dashboard extends React.Component {
         this.setState(state);
     }
 
-    getContent() {
-        if (this.state.user.email === null) {
-            switch (this.state.content) {
-                case 'login':
-                    return <GridSegment>
-                        <Login onSignUpClick={this.handleSignUpClick}/>
-                    </GridSegment>;
-                case 'signup':
-                    return <GridSegment>
-                        <SignUp onLogInClick={this.handleLogInClick}/>
-                    </GridSegment>;
-            }
-        }
-        return <UserArea
-            user={this.state.user}
-            hasPendingUpdatesChanges={this.state.hasPendingUpdatesChanges}
-            hasPendingAlertsChanges={this.state.hasPendingAlertsChanges}
-            hasPendingSettingsChanges={this.state.hasPendingSettingsChanges}
-            onSaveUpdatesClick={this.handleSaveUpdatesClick}
-            onAddNewUpdateClick={this.handleAddNewUpdateClick}
-            onDeleteUpdateClick={this.handleDeleteUpdateClick}
-            onToggleUpdateActiveClick={this.handleToggleUpdateActiveClick}
-            onUpdateHourChange={this.handleUpdateHourChange}
-            onUpdateMinuteChange={this.handleUpdateMinuteChange}
-            onUpdateProductChange={this.handleUpdateProductChange}
-            onUpdateNameChange={this.handleUpdateNameChange}
-            onUpdateDescriptionChange={this.handleUpdateDescriptionChange}
-        />;
-    }
-
-    getHeader() {
-        if (this.state.user === null) {
-            return <Header/>;
-        }
-        return <Header userEmail={this.state.user.email}/>;
-    }
-
-    populateUser() {
-        axios.post('/calerts/api/session').then((res) => {
-            const state = this.state;
-            state.user = {
-                    email: res.data.email,
-                    alerts: res.data.alerts,
-                    updates: res.data.updates,
-                    settings: res.data.settings
-                };
-            this.setState(state);
-        }).catch((err) => {
-            console.log('Session GET error: ' + err);
-        })
-    }
-
-    componentWillMount() {
-        this.populateUser();
-    }
-
-    render() {
-        return (
-            <div>
-                {this.getHeader()}
-                {this.getContent()}
-            </div>
-        );
-    }
 }
