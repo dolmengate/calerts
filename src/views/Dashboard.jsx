@@ -47,6 +47,8 @@ export default class Dashboard extends React.Component {
         this.handleAddNewConditionSymbolClick = this.handleAddNewConditionSymbolClick.bind(this);
         this.handleAddNewAlertConditionClick = this.handleAddNewAlertConditionClick.bind(this);
         this.handleSaveAlertsClick = this.handleSaveAlertsClick.bind(this);
+        this.handleDeleteConditionSymbolClick = this.handleDeleteConditionSymbolClick.bind(this);
+        this.handleAddNewAlertClick = this.handleAddNewAlertClick.bind(this);
     }
 
     getContent() {
@@ -82,6 +84,8 @@ export default class Dashboard extends React.Component {
             onConditionSymbolChange={this.handleConditionSymbolChange}
             onAddNewSymbolClick={this.handleAddNewConditionSymbolClick}
             onAddNewConditionClick={this.handleAddNewAlertConditionClick}
+            onDeleteConditionSymbolClick={this.handleDeleteConditionSymbolClick}
+            onAddNewAlertClick={this.handleAddNewAlertClick}
         />;
     }
 
@@ -131,6 +135,43 @@ export default class Dashboard extends React.Component {
     handleConditionSymbolChange(event, alertIdIndex, conditionIdIndex, symbolIdIndex) {
         const state = this.state;
         state.user.alerts[alertIdIndex].conditions[conditionIdIndex].symbols[symbolIdIndex].value = event.target.value;
+        state.hasPendingAlertsChanges = true;
+        this.setState(state);
+    }
+
+    handleAddNewAlertClick() {
+        console.log('add new alert');
+        const state = this.state;
+        state.user.alerts.push(
+            {name: 'new alert', active: true, conditions: [
+                    {
+                        symbols: [
+                            {
+                                type: 'product',
+                                value: 'btcusd'
+                            }
+                        ]
+                    }
+                ]
+            }
+        );
+        state.hasPendingAlertsChanges = true;
+        this.setState(state);
+    }
+
+    handleDeleteConditionSymbolClick(alertIdIndex, conditionIdIndex, symbolIdIndex) {
+        const state = this.state;
+        const alert = state.user.alerts[alertIdIndex];
+        const condition = alert.conditions[conditionIdIndex];
+
+        condition.symbols.splice(symbolIdIndex, 1);
+
+        if (condition.symbols.length === 0)
+            alert.conditions.splice(conditionIdIndex, 1);
+        
+        if (alert.conditions.length === 0)
+            state.user.alerts.splice(alertIdIndex, 1);
+
         state.hasPendingAlertsChanges = true;
         this.setState(state);
     }

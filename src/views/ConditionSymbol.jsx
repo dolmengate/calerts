@@ -12,7 +12,10 @@ export default class ConditionSymbol extends React.Component {
                     conditionId={this.props.conditionId}
                     alertId={this.props.alertId}
                 />
-                <span className="ui negative mini icon button"><i className="ui large remove icon" /></span>
+                <span
+                    className="ui negative mini icon button"
+                    onClick={() => this.props.onDeleteClick(this.props.alertId, this.props.conditionId, this.props.symbolId)}
+                ><i className="ui large remove icon" /></span>
             </div>
 
         );

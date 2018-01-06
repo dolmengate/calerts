@@ -6,7 +6,7 @@ function PostButton(props) {
     return (
         <button
             type="button"
-            className={props.styles}
+            className={props.classes}
             tabIndex="0"
             onClick={
                 function () {
