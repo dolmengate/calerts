@@ -51,6 +51,14 @@ User.prototype.setUpdates = function (values, callback) {
     })
 };
 
+User.prototype.setAlerts = function (values, callback) {
+    dbAccess.updateUser({emailAddress: this.emailAddress}, {$set: {alerts: values} }, (updatedUserDoc) => {
+        // reflect changes to DB doc in local User object
+        this.alerts = updatedUserDoc.value.alerts;
+        callback(this);
+    })
+};
+
 User.prototype.setVerified = function (v, callback) {
     dbAccess.updateUser({emailAddress: this.emailAddress}, {$set: {isVerified: v} }, (updatedUserDoc) => {
         this.isVerified = updatedUserDoc.value.isVerified;

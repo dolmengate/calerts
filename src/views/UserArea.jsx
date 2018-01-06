@@ -21,6 +21,7 @@ export default class UserArea extends React.Component {
                             onAddNewConditionClick={this.props.onAddNewConditionClick}
                             onDeleteConditionSymbolClick={this.props.onDeleteConditionSymbolClick}
                             onAddNewAlertClick={this.props.onAddNewAlertClick}
+                            onAlertNameChange={this.props.onAlertNameChange}
                         />
                     </div>
                     <h3 className="ui header top attached">Updates</h3>

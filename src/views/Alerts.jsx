@@ -11,29 +11,40 @@ export default class Alerts extends React.Component {
 
     renderAlert(alert, alertIndex) {
         return <ul key={alertIndex}>
-            <h3>{alert.name}</h3>
+            <div className="ui labeled input" style={{width: '10em'}}>
+                <div className="ui label">Name</div>
+                <input
+                    type="text"
+                    placeholder="Alert name"
+                    defaultValue={alert.name}
+                    onChange={(event) => this.props.onAlertNameChange(event, alertIndex)}
+                />
+            </div>
             <button
-                className="ui mini labeled icon button"
+                className="ui mini labeled right floated icon button"
                 onClick={() => this.props.onAddNewConditionClick(alertIndex)}
             >
                 Add Alert Condition
                 <i className="ui large add square icon"/>
             </button>
-            {
-                alert.conditions.map((condition, conditionIndex) => {
-                    return <div key={conditionIndex}>
-                        <AlertCondition
-                            key={conditionIndex}
-                            id={conditionIndex}
-                            alertId={alertIndex}
-                            condition={condition}
-                            onSymbolChange={this.props.onConditionSymbolChange}
-                            onAddNewSymbolClick={this.props.onAddNewSymbolClick}
-                            onDeleteSymbolClick={this.props.onDeleteConditionSymbolClick}
-                        />
-                    </div>
-                })
-            }
+            <div className="ui horizontal divider header">Conditions</div>
+                <div>
+                {
+                    alert.conditions.map((condition, conditionIndex) => {
+                        return <div key={conditionIndex}>
+                            <AlertCondition
+                                key={conditionIndex}
+                                id={conditionIndex}
+                                alertId={alertIndex}
+                                condition={condition}
+                                onSymbolChange={this.props.onConditionSymbolChange}
+                                onAddNewSymbolClick={this.props.onAddNewSymbolClick}
+                                onDeleteSymbolClick={this.props.onDeleteConditionSymbolClick}
+                            />
+                        </div>
+                    })
+                }
+                </div>
         </ul>;
     }
 

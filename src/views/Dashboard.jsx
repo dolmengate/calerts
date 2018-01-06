@@ -49,6 +49,7 @@ export default class Dashboard extends React.Component {
         this.handleSaveAlertsClick = this.handleSaveAlertsClick.bind(this);
         this.handleDeleteConditionSymbolClick = this.handleDeleteConditionSymbolClick.bind(this);
         this.handleAddNewAlertClick = this.handleAddNewAlertClick.bind(this);
+        this.handleAlertNameChange = this.handleAlertNameChange.bind(this);
     }
 
     getContent() {
@@ -86,6 +87,7 @@ export default class Dashboard extends React.Component {
             onAddNewConditionClick={this.handleAddNewAlertConditionClick}
             onDeleteConditionSymbolClick={this.handleDeleteConditionSymbolClick}
             onAddNewAlertClick={this.handleAddNewAlertClick}
+            onAlertNameChange={this.handleAlertNameChange}
         />;
     }
 
@@ -126,7 +128,10 @@ export default class Dashboard extends React.Component {
 
     handleSaveAlertsClick() {
         const state = this.state;
-        console.log('conditions saved');
+        axios.post('/calerts/api/dashboard/alerts/save', this.state.user.alerts)
+            .then((res) => {
+                console.log(res); // todo success message
+            });
         state.hasPendingAlertsChanges = false;
         this.setState(state);
     }
@@ -135,6 +140,13 @@ export default class Dashboard extends React.Component {
     handleConditionSymbolChange(event, alertIdIndex, conditionIdIndex, symbolIdIndex) {
         const state = this.state;
         state.user.alerts[alertIdIndex].conditions[conditionIdIndex].symbols[symbolIdIndex].value = event.target.value;
+        state.hasPendingAlertsChanges = true;
+        this.setState(state);
+    }
+
+    handleAlertNameChange(event, alertIdIndex) {
+        const state = this.state;
+        state.user.alerts[alertIdIndex].name = event.target.value;
         state.hasPendingAlertsChanges = true;
         this.setState(state);
     }
@@ -168,7 +180,7 @@ export default class Dashboard extends React.Component {
 
         if (condition.symbols.length === 0)
             alert.conditions.splice(conditionIdIndex, 1);
-        
+
         if (alert.conditions.length === 0)
             state.user.alerts.splice(alertIdIndex, 1);
 
