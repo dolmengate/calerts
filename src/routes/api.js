@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const dbAccess = require('../dbaccess');
 const crypto = require('crypto');
 const User = require('../User');
 const sendmail = require('../libs/sendmail');
@@ -7,46 +6,38 @@ const dashboard = require('./dashboard');
 
 router.use('/dashboard', dashboard);
 
-router.post('/login', (req, res) => {
-    User.find(req.body.email, (err, user) => {
-        if (err)  {
-            res.sendStatus(401);
-        } else {    // user exists
-            user.attemptLogin(req.body.password, (err, matches) => {
-                if (err) {
-                    res.sendStatus(401);
-                } else if (matches) {
-                    req.session.regenerate((err) => {
-                        req.session.user = user;    // this duplicates the users entire account data on the session :(
-                        res.sendStatus(200);
-                    })
-                }
-            });
-        }
-    })
+router.post('/login', async (req, res) => {
+    try {
+        const user = await User.find(req.body.email);
+        await user.attemptLogin(req.body.password);
+        req.session.regenerate((err) => {
+            req.session.user = user;
+            res.sendStatus(200);        // 3. send status
+        });
+        return 'done';                  // 2. login successful
+    } catch (err) {
+        res.sendStatus(401);
+    }
 });
 
-router.post('/signup', (req, res) => {
-    dbAccess.findUser({emailAddress: req.body.email}, (user) => {    // check for pre-existing user
-
-        if (user !== null) {
+router.post('/signup', async (req, res) => {
+    User.find(req.body.email)
+        .then((user) => {
             if (user.isVerified === true) {
                 res.send('User already exists.');                   // user exists and is verified
             } else {
                 res.send('Verification email re-sent.');
                 sendUserVerificationEmail(req.body.email);   // user exists but is not verified (send a new verification email)
             }
-        } else {
-            res.send('Verification email sent.');
-            sendUserVerificationEmail(req.body.email);       // user does not exist
-
-            createPasswordHash(req.body.password, (salt, hash) => { // create an unverified user
-                User.create(req.body.email, salt, hash, () => {  // TODO include createPassWordHash in User class
+        })
+        .catch(() => {                                       // user does not exist, create it
+            User.create(req.body.email, req.body.password)
+                .then(() => {
                     console.log('User ' + req.body.email + ' created');
-                });
-            })
-        }
-    });
+                    res.send('Verification email sent.');
+                    sendUserVerificationEmail(req.body.email);
+                })
+        })
 });
 
 router.post('/logout', (req, res) => {
@@ -107,17 +98,6 @@ createUserVerificationHash = function (userEmail, callback) {
 
     hash.update(userEmail + new Date()); // this could be anything
     callback(hash.digest('hex'));
-};
-
-/**
- * Create a salted password hash to store in the users record.
- *
- */
-createPasswordHash = function (password, callback) {
-    const salt = crypto.randomBytes(64);
-    crypto.pbkdf2(password, salt, 100000, 64, 'sha512', (err, hash) => {
-        callback(salt, hash);
-    })
 };
 
 module.exports = router;

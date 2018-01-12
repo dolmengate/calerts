@@ -27,10 +27,10 @@ export default class SymbolInput extends React.Component {
                     defaultValue={symbol.value}
                     onChange={event => this.props.onChange(event, this.props.alertId, this.props.conditionId, this.props.id)}
                 >
-                    <option value='lte'>&lt;=</option>
-                    <option value='gte'>&gt;=</option>
-                    <option value='lt'>&lt;</option>
-                    <option value='gt'>&gt;</option>
+                    <option value='letheq'>&lt;=</option>
+                    <option value='grtheq'>&gt;=</option>
+                    <option value='leth'>&lt;</option>
+                    <option value='grth'>&gt;</option>
                 </select>;
             case 'number':
                 return <div className="ui input">

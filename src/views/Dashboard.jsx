@@ -195,7 +195,7 @@ export default class Dashboard extends React.Component {
                 state.user.alerts[alertIdIndex].conditions[conditionIdIndex].symbols.push( {type: type, value: 'btcusd'} );
                 break;
             case 'comparison':
-                state.user.alerts[alertIdIndex].conditions[conditionIdIndex].symbols.push( {type: type, value: 'lt'} );
+                state.user.alerts[alertIdIndex].conditions[conditionIdIndex].symbols.push( {type: type, value: 'leth'} );
                 break;
             case 'number':
                 state.user.alerts[alertIdIndex].conditions[conditionIdIndex].symbols.push( {type: type, value: 0} );

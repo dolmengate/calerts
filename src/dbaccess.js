@@ -40,7 +40,7 @@ exports.createUser = function(emailAddress, salt, hash, callback) {
                                     },
                                     {
                                         type: 'comparison',
-                                        value: 'gt'
+                                        value: 'grth'
                                     },
                                     {
                                         type: 'number',
